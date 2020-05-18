@@ -17,7 +17,7 @@ Distributed as-is; no warranty is given.
 
 //****************************************************************************//
 //
-//  Default construction is I2C mode, address 0x19.
+//  Default construction is I2C mode, address 0x0E.
 //
 //****************************************************************************//
 KXTJ3::KXTJ3( uint8_t inputArg = 0x0E )
@@ -65,14 +65,12 @@ kxtj3_status_t KXTJ3::begin( float SampleRate, uint8_t accRange )
 }
 
 //****************************************************************************//
-//
 //  ReadRegisterRegion
 //
 //  Parameters:
 //    *outputPointer -- Pass &variable (base address of) to save read data to
 //    offset -- register to read
 //    length -- number of bytes to read
-//
 //****************************************************************************//
 kxtj3_status_t KXTJ3::readRegisterRegion(uint8_t *outputPointer , uint8_t offset, uint8_t length)
 {
@@ -106,13 +104,11 @@ kxtj3_status_t KXTJ3::readRegisterRegion(uint8_t *outputPointer , uint8_t offset
 }
 
 //****************************************************************************//
-//
 //  ReadRegister
 //
 //  Parameters:
 //    *outputPointer -- Pass &variable (address of) to save read data to
 //    offset -- register to read
-//
 //****************************************************************************//
 kxtj3_status_t KXTJ3::readRegister(uint8_t* outputPointer, uint8_t offset) {
 	//Return value
@@ -142,13 +138,11 @@ kxtj3_status_t KXTJ3::readRegister(uint8_t* outputPointer, uint8_t offset) {
 }
 
 //****************************************************************************//
-//
 //  readRegisterInt16
 //
 //  Parameters:
 //    *outputPointer -- Pass &variable (base address of) to save read data to
 //    offset -- register to read
-//
 //****************************************************************************//
 kxtj3_status_t KXTJ3::readRegisterInt16( int16_t* outputPointer, uint8_t offset )
 {
@@ -163,15 +157,14 @@ kxtj3_status_t KXTJ3::readRegisterInt16( int16_t* outputPointer, uint8_t offset 
 }
 
 //****************************************************************************//
-//
 //  writeRegister
 //
 //  Parameters:
 //    offset -- register to write
 //    dataToWrite -- 8 bit data to write to register
-//
 //****************************************************************************//
-kxtj3_status_t KXTJ3::writeRegister(uint8_t offset, uint8_t dataToWrite) {
+kxtj3_status_t KXTJ3::writeRegister(uint8_t offset, uint8_t dataToWrite)
+{
 	kxtj3_status_t returnError = IMU_SUCCESS;
 
   //Write the byte
@@ -239,22 +232,17 @@ float KXTJ3::axisAccel( axis_t _axis)
 
 }
 
-	// Set the IMU to Power-down mode ~ 0.5uA;
-kxtj3_status_t KXTJ3::imu_power_down( void )
+kxtj3_status_t	KXTJ3::standby( bool _en )
 {
-	// ODR[3:0] -> (0000: power-down mode; others: Refer to Table 31: Data rate configuration)
-	return writeRegister(KXTJ3_CTRL_REG1, 0x00);
-}
-
-kxtj3_status_t	KXTJ3::enable_config( void )
-{
-	uint8_t _pc1 = 0x7E;
 	uint8_t _ctrl;
 
-	// PC1 bit -> controls the operating mode of the KXTJ3 and allow modificaitons
+	// "Backup" KXTJ3_CTRL_REG1
 	readRegister(&_ctrl, KXTJ3_CTRL_REG1);
 	
-	_ctrl &= _pc1;
+	if( _en )
+		_ctrl &= 0x7E;
+	else
+		_ctrl |= (0x01 << 7);	// disable standby-mode -> Bit7 = 1 = operating mode
 
 	return writeRegister(KXTJ3_CTRL_REG1, _ctrl);
 }
@@ -268,7 +256,7 @@ void KXTJ3::applySettings( void )
 {
 	uint8_t dataToWrite = 0;  //Temporary variable
 
-	enable_config();
+	standby( true );
 	
 	//Build DATA_CTRL_REG
 
@@ -324,37 +312,73 @@ void KXTJ3::applySettings( void )
 }
 
 //****************************************************************************//
-//
-//  Configure interrupts 1 or 2, stop or move, threshold and duration
+//  Configure interrupt, stop or move, threshold and duration
 //	Durationsteps and maximum values depend on the ODR chosen.
-//
 //****************************************************************************//
-kxtj3_status_t KXTJ3::intConf(event_t moveType, 
-						uint8_t threshold,
-						uint8_t timeDur,
-						bool		polarity )
+kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur, uint8_t naDur, bool polarity )
 {
 	// Note that to properly change the value of this register, the PC1 bit in CTRL_REG1must first be set to “0”.
-	enable_config();
+	standby( true );
 
 	kxtj3_status_t returnError = IMU_SUCCESS;
 
 	// Build INT_CTRL_REG1
 
-	uint8_t dataToWrite = 0x2A;  // Interrupt enabled, active low, non-latched
+	uint8_t dataToWrite = 0x22;  		// Interrupt enabled, active LOW, non-latched
 	
 	if( polarity == HIGH )
-		dataToWrite |= (0x10);		// Active HIGH
+		dataToWrite |= (0x01 << 5);		// Active HIGH
 
 	_DEBBUG ("KXTJ3_INT_CTRL_REG1: 0x", dataToWrite);
 	returnError = writeRegister(KXTJ3_INT_CTRL_REG1, dataToWrite);
 	
+	// WUFE – enables the Wake-Up (motion detect) function.
+
+	uint8_t _reg1;
+
+	returnError = readRegister(&_reg1, KXTJ3_CTRL_REG1);
+	
+	_reg1 |= (0x01 << 1);
+
+	returnError = writeRegister(KXTJ3_CTRL_REG1, _reg1);
+
 	// Build INT_CTRL_REG2
 
-	dataToWrite = 0x3F;  // enable interrupt on all axis any direction
+	dataToWrite = 0xBF;  // enable interrupt on all axis any direction - Unlatched
 
 	_DEBBUG ("KXTJ3_INT_CTRL_REG1: 0x", dataToWrite);
 	returnError = writeRegister(KXTJ3_INT_CTRL_REG2, dataToWrite);
-	
+
+	// Set WAKE-UP (motion detect) Threshold
+
+	dataToWrite = (uint8_t)(threshold >> 4);
+
+	_DEBBUG ("KXTJ3_WAKEUP_THRD_H: 0x", dataToWrite);
+	returnError = writeRegister(KXTJ3_WAKEUP_THRD_H, dataToWrite);
+
+	dataToWrite = (uint8_t)(threshold << 4);
+
+	_DEBBUG ("KXTJ3_WAKEUP_THRD_L: 0x", dataToWrite);
+	returnError = writeRegister(KXTJ3_WAKEUP_THRD_L, dataToWrite);
+
+	// WAKEUP_COUNTER -> Sets the time motion must be present before a wake-up interrupt is set
+	// WAKEUP_COUNTER (counts) = Wake-Up Delay Time (sec) x Wake-Up Function ODR(Hz)
+
+	dataToWrite = moveDur;
+
+	_DEBBUG ("KXTJ3_WAKEUP_COUNTER: 0x", dataToWrite);
+	returnError = writeRegister(KXTJ3_WAKEUP_COUNTER, dataToWrite);
+
+	// Non-Activity register sets the non-activity time required before another wake-up interrupt will be reported.
+	// NA_COUNTER (counts) = Non-ActivityTime (sec) x Wake-Up Function ODR(Hz)
+
+	dataToWrite = naDur;
+
+	_DEBBUG ("KXTJ3_NA_COUNTER: 0x", dataToWrite);
+	returnError = writeRegister(KXTJ3_NA_COUNTER, dataToWrite);
+
+	// Set IMU to Operational mode
+	returnError = standby( false );
+
 	return returnError;
 }

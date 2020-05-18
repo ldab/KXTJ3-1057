@@ -60,13 +60,6 @@ typedef enum
 
 typedef enum
 {
-	DET_STOP,
-	DET_MOVE,
-	//...
-} event_t;
-
-typedef enum
-{
 	X = 0,
 	Y,
 	Z,
@@ -78,13 +71,12 @@ public:
 	KXTJ3( uint8_t );
 	
 	/*
+	Accelerometer range = 2, 4, 8, 16g
 	Sample Rate - 0.781, 1.563, 3.125, 6.25, 12.5, 25, 50, 100, 200, 400, 800, 1600Hz
 	Output Data Rates ≥400Hz will force device into High Resolution mode
 	*/
 	kxtj3_status_t begin( float SampleRate,	uint8_t accRange );
 	
-	// The following utilities read and write to the IMU
-
 	// readRegister reads one 8-bit register
 	kxtj3_status_t readRegister(uint8_t* outputPointer, uint8_t offset);
 	
@@ -96,28 +88,24 @@ public:
 	kxtj3_status_t writeRegister(uint8_t, uint8_t);
 
 	// Configure Interrupts
-	// INT1 or 2, Move or Stop, Detection Sensivity and duration cycles = from 1 to 127
-	kxtj3_status_t intConf(event_t moveType, 
-					uint8_t threshold,
-					uint8_t timeDur,
-					bool 		polarity = HIGH);
+	// @Threshold from 1 to 4095 counts
+	// @moveDur   from 1 to 255 counts
+	// @naDur			from 1 to 255 counts
+	// Threshold (g) = threshold (counts) / 256(counts/g)
+	// timeDur (sec) = WAKEUP_COUNTER (counts) / Wake-Up Function ODR(Hz)
+	// Non-ActivityTime (sec) = NA_COUNTER (counts) / Wake-Up Function ODR(Hz)
+	kxtj3_status_t intConf( uint16_t threshold, uint8_t moveDur, uint8_t naDur, bool polarity = HIGH);
 	
 	// Read axis acceleration as Float
 	float axisAccel( axis_t _axis);
 
-	// Set the IMU to Power-down mode ~ 0.5uA;
-	kxtj3_status_t imu_power_down( void );
+	// Set IMU to Standby ~0.9uA, also Enable configuration -> PC1 bit in CTRL_REG1 must first be set to “0”
+	kxtj3_status_t standby( bool _en = true );
 	
 private:
 	uint8_t I2CAddress;
-	uint16_t accelSampleRate; //Can be 1, 10, 25, 50, 100, 200, 400, 1600, 5000
-	uint8_t xAccelEnabled;
-	uint8_t yAccelEnabled;
-	uint8_t zAccelEnabled;
-	uint8_t accelRange; 			//Accelerometer range = 2, 4, 8, 16g
-
-	// Enable configuration -> PC1 bit in CTRL_REG1must first be set to “0”
-	kxtj3_status_t enable_config( void );
+	float 	accelSampleRate; 	// Sample Rate - 0.781, 1.563, 3.125, 6.25, 12.5, 25, 50, 100, 200, 400, 800, 1600Hz
+	uint8_t accelRange; 			// Accelerometer range = 2, 4, 8, 16g
 
 	//Apply settings at .begin()
 	void applySettings( void );

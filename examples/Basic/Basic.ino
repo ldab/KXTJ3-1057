@@ -40,10 +40,8 @@ void setup()
     Serial.print("IMU initialized.\n");
   }
   
-  //Detection threshold can be from 1 to 127 and depends on the Range
-  //chosen above, change it and test accordingly to your application
-  //Duration = timeDur x Seconds / sampleRate
-  myIMU.intConf(DET_MOVE, 13, 2);
+  // Detection threshold, movement duration and polarity
+  myIMU.intConf(123, 1, 10, HIGH);
 
   uint8_t readData = 0;
 
@@ -57,6 +55,8 @@ void setup()
 
 void loop()
 {
+
+  myIMU.standby( false );
 
   int16_t dataHighres = 0;
 
@@ -81,6 +81,8 @@ void loop()
   // Read accelerometer data in mg as Float
   Serial.print(" Acceleration Z float = ");
   Serial.println( myIMU.axisAccel( Z ), 4);
+
+  myIMU.standby( true );
 
   delay(1000);
 

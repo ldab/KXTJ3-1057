@@ -10,45 +10,54 @@ Minimalistic library for motion detection using low cost KXTJ3-1057, 3-axis MEMS
 
 ## TODO
 
-- [ ] Add Filter options
+- [ ] `returnError` Handler
 - [ ] Update Keywords
-
-## Low Power configuration
-
-Operating mode  | Turn-on time (ms) | @2g (mg/digit)  
-----------------|-------------------|----------------
-Low Power 8bits |1|16
-Normal Mode 10bits|1.6|4
-High Res 12bits|7/ODD|1
 
 ###  Current consumption of operating modes μA
 
-Operating mode (HZ) | Low Power | Normal Mode | High Resolution
-----------------|-------------------|----------------|-----------
-1|2|2|2
-10|3|4|4
-25|4|6|6
-50|6|11|11
-100|10|20|20
-200|18|38|38
-400|36|73|73
-1344||185|185
-1620|100||
+Operating mode (HZ) | Low Power | High Resolution
+----------------|-------------------|-----------
+0.781|1.543|
+1.563|1.635|
+3.125|1.922|
+6.25|2.488|
+12.5|3.431|
+25|5.784|
+50|9.821|
+100|18.15|
+200|34.72|
+400||156
+800||156
+1600||156
 
 ## Interrupt Threshold
 
-Interrupt threshold sensitivity is directly proportional to the Full Scale 2, 4, 8 or 16g chosen:
+Interrupt threshold sensitivity is compared to the top 12bits of the accelerometer 8g output value regardless of the resolution chosen:
 
-> This value can be anything from 1 to 127
+> This value can be anything from 1 to 4095
 
-* 16 mg @ FS = ±2 g
-* 32 mg @ FS = ±4 g
-* 62 mg @ FS = ±8 g
-* 186 mg @ FS = ±16 g
+* i.e 0.0039 (1/256) to 16 g (4095/256)
+
+## Interrupt Duration
+
+Interrupt event duration to trigger the interrupt pin is a function of events and Sample Rate:
+
+> This value can be anything from 1 to 255
+
+* i.e 5 event_counts / 6.25 Hz = 0.8 seconds
+
+## Non-Activity Duration
+
+Interrupt non-activity duration to *reset* the interrupt pin is a function of events and Sample Rate:
+
+> This value can be anything from 1 to 255
+
+* i.e 5 event_counts / 6.25 Hz = 0.8 seconds
 
 ## Known Limitations
 
 * Only 8 and 12 bits modes are implemented (14-bit is not);
+* Only non-latched interrupt is implemented;
 
 ## Credits
 
