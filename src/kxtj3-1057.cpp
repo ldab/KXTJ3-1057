@@ -327,7 +327,7 @@ kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur, uint8_t naDur
 	uint8_t dataToWrite = 0x22;  		// Interrupt enabled, active LOW, non-latched
 	
 	if( polarity == HIGH )
-		dataToWrite |= (0x01 << 5);		// Active HIGH
+		dataToWrite |= (0x01 << 4);		// Active HIGH
 
 	_DEBBUG ("KXTJ3_INT_CTRL_REG1: 0x", dataToWrite);
 	returnError = writeRegister(KXTJ3_INT_CTRL_REG1, dataToWrite);
