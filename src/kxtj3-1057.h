@@ -101,6 +101,10 @@ public:
 
 	// Set IMU to Standby ~0.9uA, also Enable configuration -> PC1 bit in CTRL_REG1 must first be set to “0”
 	kxtj3_status_t standby( bool _en = true );
+
+	// returns true if a motion interrupt has occured
+	// returns false if no motion interrupt has occured or the no activity timer elapsed
+	bool isMotionInt();
 	
 private:
 	uint8_t I2CAddress;
