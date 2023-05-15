@@ -336,10 +336,10 @@ kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur, uint8_t naDur
 
 	// Build INT_CTRL_REG1
 
-	uint8_t dataToWrite = 0x22;  		// Interrupt enabled, active LOW, non-latched
+	uint8_t dataToWrite = 0x2A;  		// Interrupt enabled, active LOW, non-latched
 	
 	if( polarity == HIGH )
-		dataToWrite |= (0x01 << 5);		// Active HIGH
+		dataToWrite |= (0x01 << 4);		// Active HIGH
 
 	_DEBBUG ("KXTJ3_INT_CTRL_REG1: 0x", dataToWrite);
 	returnError = writeRegister(KXTJ3_INT_CTRL_REG1, dataToWrite);
@@ -393,4 +393,12 @@ kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur, uint8_t naDur
 	returnError = standby( false );
 
 	return returnError;
+}
+
+bool KXTJ3::isMotionInt()
+{
+	uint8_t int_src_1;
+	readRegister(&int_src_1, KXTJ3_INT_SOURCE1);
+
+	return ( int_src_1 & 0b10) >> 1; // return WUFS bit (1 when motion int)
 }

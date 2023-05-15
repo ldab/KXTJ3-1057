@@ -32,11 +32,13 @@ Operating mode (HZ) | Low Power | High Resolution
 
 ## Interrupt Threshold
 
-Interrupt threshold sensitivity is compared to the top 12bits of the accelerometer 8g output value regardless of the resolution chosen:
+This is the sensitivity required to trigger the interrupt (and it must exceed this for duration, see below)
 
-> This value can be anything from 1 to 4095
+Range from 1 to 4095
 
-* i.e 0.0039 (1/256) to 16 g (4095/256)
+Take desried sensitivity in g and multiply by 256
+
+* ex. for 4g, the value should be set to 4 * 256 = 1024
 
 ## Interrupt Duration
 
