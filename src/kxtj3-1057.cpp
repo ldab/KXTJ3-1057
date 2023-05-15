@@ -33,17 +33,9 @@ kxtj3_status_t KXTJ3::begin( float SampleRate, uint8_t accRange )
 	kxtj3_status_t returnError = IMU_SUCCESS;
 
   Wire.begin();
-  
-	// Start-up time, Figure 1: Typical StartUp Time - DataSheet
-	#ifdef HIGH_RESOLUTION
-		if			( SampleRate < 1)		delay(1300);
-		else if ( SampleRate < 3)		delay(650);
-		else if ( SampleRate < 6)		delay(350);
-		else if ( SampleRate < 25)	delay(180);
-		else												delay(45);
-	#else
-		delay(2);
-	#endif
+	
+	// Power-up time is up to 30ms according to DataSheet, so delay 50ms just to play it safe
+	delay(50);
 
 	//Check the ID register to determine if the operation was a success.
 	uint8_t _whoAmI;
@@ -60,6 +52,26 @@ kxtj3_status_t KXTJ3::begin( float SampleRate, uint8_t accRange )
 
 	_DEBBUG("Apply settings");
 	applySettings();
+
+	// Start-up time is time from applySettings to valid data; Figure 1: Typical StartUp Time - DataSheet
+	#ifdef HIGH_RESOLUTION
+		if	(SampleRate < 1)	delay(1300);
+		else if (SampleRate < 3)	delay(650);
+		else if (SampleRate < 6)	delay(330);
+		else if (SampleRate < 12)	delay(170);
+		else if (SampleRate < 25)	delay(90);
+		else if (SampleRate < 50)	delay(45);
+		else if (SampleRate < 100)	delay(25);
+		else if (SampleRate < 200)	delay(11);
+		else if (SampleRate < 400)	delay(6);
+		else if (SampleRate < 800)	delay(4);
+		else if (SampleRate < 1600)	delay(3);
+		else				delay(2);
+	#else
+		if	(SampleRate < 800 && SampleRate > 200)	delay (4);
+		else if (SampleRate < 1600 && SampleRate > 400)	delay (3);
+		else						delay (2);
+	#endif
 
 	return returnError;
 }
