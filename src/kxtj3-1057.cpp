@@ -372,7 +372,7 @@ kxtj3_status_t	KXTJ3::standby( bool _en )
 void KXTJ3::startupDelay( void )
 {
 	#ifdef HIGH_RESOLUTION
-		if		(accelSampleRate < 1)		delay(1300);
+		if (accelSampleRate < 1)		delay(1300);
 		else if (accelSampleRate < 3)		delay(650);
 		else if (accelSampleRate < 6)		delay(330);
 		else if (accelSampleRate < 12)		delay(170);
@@ -383,11 +383,11 @@ void KXTJ3::startupDelay( void )
 		else if (accelSampleRate < 400)		delay(6);
 		else if (accelSampleRate < 800)		delay(4);
 		else if (accelSampleRate < 1600)	delay(3);
-		else								delay(2);
+		else					delay(2);
 	#else
-		if	(accelSampleRate < 800 && accelSampleRate > 200)		delay (4);
+		if (accelSampleRate < 800 && accelSampleRate > 200)		delay (4);
 		else if (accelSampleRate < 1600 && accelSampleRate > 400)	delay (3);
-		else														delay (2);
+		else								delay (2);
 	#endif
 }
 
@@ -405,7 +405,7 @@ void KXTJ3::applySettings( void )
 	//Build DATA_CTRL_REG
 
 	//  Convert ODR
-	if(accelSampleRate < 1)			dataToWrite |= 0x08;	// 0.781Hz
+	if(accelSampleRate < 1)		dataToWrite |= 0x08;	// 0.781Hz
 	else if(accelSampleRate < 2)	dataToWrite |= 0x09;	// 1.563Hz
 	else if(accelSampleRate < 4)	dataToWrite |= 0x0A;	// 3.125Hz
 	else if(accelSampleRate < 8)	dataToWrite |= 0x0B;	// 6.25Hz
@@ -416,7 +416,7 @@ void KXTJ3::applySettings( void )
 	else if(accelSampleRate < 250)	dataToWrite |= 0x04;	// 200Hz
 	else if(accelSampleRate < 450)	dataToWrite |= 0x05;	// 400Hz
 	else if(accelSampleRate < 850)	dataToWrite |= 0x06;	// 800Hz
-	else							dataToWrite	|= 0x07;	// 1600Hz
+	else				dataToWrite |= 0x07;	// 1600Hz
 
 	//Now, write the patched together data
 	_DEBBUG ("KXTJ3_DATA_CTRL_REG: 0x", dataToWrite);
