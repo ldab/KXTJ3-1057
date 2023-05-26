@@ -271,8 +271,8 @@ kxtj3_status_t KXTJ3::softwareReset( void )
 		I2CAddress = tempAddress;
 	}
 
-	//Delay for software start-up before returning
-	startupDelay();
+	//Delay for software start-up before returning (TN017 Table 1)
+	delay(2);
 
 	return returnError;
 }
