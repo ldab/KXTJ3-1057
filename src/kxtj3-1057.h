@@ -91,9 +91,9 @@ public:
 	kxtj3_status_t softwareReset( void );
 
 	// Configure Interrupts
-	// @Threshold from 1 to 4095 counts
-	// @moveDur   from 1 to 255 counts
-	// @naDur			from 1 to 255 counts
+	// @Threshold	from 1 to 4095 counts
+	// @moveDur	from 1 to 255 counts
+	// @naDur	from 1 to 255 counts
 	// Threshold (g) = threshold (counts) / 256(counts/g)
 	// timeDur (sec) = WAKEUP_COUNTER (counts) / Wake-Up Function ODR(Hz)
 	// Non-ActivityTime (sec) = NA_COUNTER (counts) / Wake-Up Function ODR(Hz)
@@ -144,7 +144,7 @@ private:
 #define KXTJ3_INT_CTRL_REG2			0x1F	// *
 
 #define KXTJ3_DATA_CTRL_REG			0x21	// *
-#define KXTJ3_WAKEUP_COUNTER		0x29	// *
+#define KXTJ3_WAKEUP_COUNTER			0x29	// *
 #define KXTJ3_NA_COUNTER			0x2A	// *
 
 #define KXTJ3_WAKEUP_THRD_H			0x6A	// *
