@@ -122,9 +122,10 @@ class KXTJ3
 };
 
 // Device Registers
-#define KXTJ3_WHO_AM_I       0x0F
-#define KXTJ3_DCST_RESP      0x0C // used to verify proper integrated circuit functionality.
-                                  // It always has a byte value of 0x55
+#define KXTJ3_WHO_AM_I 0x0F
+#define KXTJ3_DCST_RESP                                                        \
+  0x0C // used to verify proper integrated circuit functionality.
+       // It always has a byte value of 0x55
 #define KXTJ3_SOFT_REST      0x7F // used during software reset
 #define KXTJ3_OUT_X_L        0x06
 #define KXTJ3_OUT_X_H        0x07
