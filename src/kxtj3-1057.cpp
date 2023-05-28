@@ -352,39 +352,39 @@ kxtj3_status_t KXTJ3::standby(bool _en)
 //****************************************************************************//
 void KXTJ3::startupDelay(void)
 {
-#ifdef HIGH_RESOLUTION
-  if (accelSampleRate < 1)
-    delay(1300);
-  else if (accelSampleRate < 3)
-    delay(650);
-  else if (accelSampleRate < 6)
-    delay(330);
-  else if (accelSampleRate < 12)
-    delay(170);
-  else if (accelSampleRate < 25)
-    delay(90);
-  else if (accelSampleRate < 50)
-    delay(45);
-  else if (accelSampleRate < 100)
-    delay(25);
-  else if (accelSampleRate < 200)
-    delay(11);
-  else if (accelSampleRate < 400)
-    delay(6);
-  else if (accelSampleRate < 800)
-    delay(4);
-  else if (accelSampleRate < 1600)
-    delay(3);
-  else
-    delay(2);
-#else
-  if (accelSampleRate < 800 && accelSampleRate > 200)
-    delay(4);
-  else if (accelSampleRate < 1600 && accelSampleRate > 400)
-    delay(3);
-  else
-    delay(2);
-#endif
+  if (highRes) {
+    if (accelSampleRate < 1)
+      delay(1300);
+    else if (accelSampleRate < 3)
+      delay(650);
+    else if (accelSampleRate < 6)
+      delay(330);
+    else if (accelSampleRate < 12)
+      delay(170);
+    else if (accelSampleRate < 25)
+      delay(90);
+    else if (accelSampleRate < 50)
+      delay(45);
+    else if (accelSampleRate < 100)
+      delay(25);
+    else if (accelSampleRate < 200)
+      delay(11);
+    else if (accelSampleRate < 400)
+      delay(6);
+    else if (accelSampleRate < 800)
+      delay(4);
+    else if (accelSampleRate < 1600)
+      delay(3);
+    else
+      delay(2);
+  } else {
+    if (accelSampleRate < 800 && accelSampleRate > 200)
+      delay(4);
+    else if (accelSampleRate < 1600 && accelSampleRate > 400)
+      delay(3);
+    else
+      delay(2);
+  }
 }
 
 //****************************************************************************//
@@ -435,9 +435,9 @@ void KXTJ3::applySettings(void)
   // LOW power, 8-bit mode
   dataToWrite = 0x80;
 
-#ifdef HIGH_RESOLUTION
-  dataToWrite = 0xC0;
-#endif
+  if (highRes) {
+    dataToWrite = 0xC0;
+  }
 
   //  Convert scaling
   switch (accelRange) {
