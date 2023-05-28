@@ -29,7 +29,7 @@ kxtj3_status_t KXTJ3::begin(float SampleRate, uint8_t accRange)
 
   kxtj3_status_t returnError = IMU_SUCCESS;
   accelSampleRate = SampleRate;
-  accelRange      = accRange;
+  accelRange = accRange;
 
   Wire.begin();
 
