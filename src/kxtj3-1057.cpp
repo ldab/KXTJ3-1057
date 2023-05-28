@@ -28,6 +28,8 @@ kxtj3_status_t KXTJ3::begin(float SampleRate, uint8_t accRange)
   _DEBBUG("Configuring IMU");
 
   kxtj3_status_t returnError = IMU_SUCCESS;
+  accelSampleRate            = SampleRate;
+  accelRange                 = accRange;
 
   Wire.begin();
 
@@ -35,56 +37,34 @@ kxtj3_status_t KXTJ3::begin(float SampleRate, uint8_t accRange)
   // play it safe
   delay(50);
 
+  // Perform software reset to make sure IMU is in good state
+  returnError = softwareReset();
+
+  // Check previous returnError to see if we should stop
+  if (returnError != IMU_SUCCESS) {
+    return returnError;
+  }
+
   // Check the ID register to determine if the operation was a success.
   uint8_t _whoAmI;
 
   readRegister(&_whoAmI, KXTJ3_WHO_AM_I);
 
   if (_whoAmI != 0x35) {
-    returnError = IMU_HW_ERROR;
+    return IMU_HW_ERROR;
   }
 
-  accelSampleRate = SampleRate;
-  accelRange      = accRange;
+  // Check the self-test register to determine if the IMU is up.
+  uint8_t _selfTest;
+
+  readRegister(&_selfTest, KXTJ3_DCST_RESP);
+
+  if (_selfTest != 0x55) {
+    return IMU_HW_ERROR;
+  }
 
   _DEBBUG("Apply settings");
   applySettings();
-
-// Start-up time is time from applySettings to valid data; Figure 1: Typical
-// StartUp Time - DataSheet
-#ifdef HIGH_RESOLUTION
-  if (SampleRate < 1)
-    delay(1300);
-  else if (SampleRate < 3)
-    delay(650);
-  else if (SampleRate < 6)
-    delay(330);
-  else if (SampleRate < 12)
-    delay(170);
-  else if (SampleRate < 25)
-    delay(90);
-  else if (SampleRate < 50)
-    delay(45);
-  else if (SampleRate < 100)
-    delay(25);
-  else if (SampleRate < 200)
-    delay(11);
-  else if (SampleRate < 400)
-    delay(6);
-  else if (SampleRate < 800)
-    delay(4);
-  else if (SampleRate < 1600)
-    delay(3);
-  else
-    delay(2);
-#else
-  if (SampleRate < 800 && SampleRate > 200)
-    delay(4);
-  else if (SampleRate < 1600 && SampleRate > 400)
-    delay(3);
-  else
-    delay(2);
-#endif
 
   return returnError;
 }
@@ -204,7 +184,89 @@ kxtj3_status_t KXTJ3::writeRegister(uint8_t offset, uint8_t dataToWrite)
   return returnError;
 }
 
-// Read axis acceleration as Float
+//****************************************************************************//
+//
+//  softwareReset
+//  Resets the device; recommended by Kionix on initial power-up (TN017)
+//
+//****************************************************************************//
+kxtj3_status_t KXTJ3::softwareReset(void)
+{
+  kxtj3_status_t returnError = IMU_SUCCESS;
+
+  // Start by copying the current I2C address to a temp variable
+  // We must do this because the IMU could boot with a bit-flipped address
+  uint8_t tempAddress        = I2CAddress;
+
+  // Write 0x00 to KXTJ3_SOFT_REST to confirm IMU is on the bus at address
+  Wire.beginTransmission(I2CAddress);
+  Wire.write(KXTJ3_SOFT_REST);
+  Wire.write(0x00);
+
+  // If NACK returned, switch I2CAddress to flipped version and try again
+  if (Wire.endTransmission() != 0) {
+    if (I2CAddress == 0x0F) {
+      I2CAddress = 0x0D;
+    } else if (I2CAddress == 0x0E) {
+      I2CAddress = 0x0C;
+    }
+
+    Wire.beginTransmission(I2CAddress);
+    Wire.write(KXTJ3_SOFT_REST);
+    Wire.write(0x00);
+
+    // If still NACK, give up, need to power cycle IMU to recover
+    if (Wire.endTransmission() != 0) {
+      // Return I2CAddress to normal before returning
+      if (I2CAddress != tempAddress) {
+        I2CAddress = tempAddress;
+      }
+      return IMU_HW_ERROR;
+    }
+  }
+
+  // Attempt to address CTRL_REG2 and end if NACK returned
+  Wire.beginTransmission(I2CAddress);
+  Wire.write(KXTJ3_CTRL_REG2);
+  Wire.write(0x00);
+
+  if (Wire.endTransmission() != 0) {
+    // Return I2CAddress to normal before returning
+    if (I2CAddress != tempAddress) {
+      I2CAddress = tempAddress;
+    }
+    return IMU_HW_ERROR;
+  }
+
+  // Send software reset command to CTRL_REG2 and end if NACK returned
+  Wire.beginTransmission(I2CAddress);
+  Wire.write(KXTJ3_CTRL_REG2);
+  Wire.write(0x80);
+
+  if (Wire.endTransmission() != 0) {
+    // Return I2CAddress to normal before returning
+    if (I2CAddress != tempAddress) {
+      I2CAddress = tempAddress;
+    }
+    return IMU_HW_ERROR;
+  }
+
+  // Set I2CAddress back to normal since we've successfully reset the IMU
+  if (I2CAddress != tempAddress) {
+    I2CAddress = tempAddress;
+  }
+
+  // Delay for software start-up before returning (TN017 Table 1)
+  delay(2);
+
+  return returnError;
+}
+
+//****************************************************************************//
+//
+//  Read axis acceleration as Float
+//
+//****************************************************************************//
 float KXTJ3::axisAccel(axis_t _axis)
 {
   int16_t outRAW;
@@ -254,9 +316,15 @@ float KXTJ3::axisAccel(axis_t _axis)
   return outFloat;
 }
 
+//****************************************************************************//
+//
+//  Place the accelerometer into/out of standby
+//
+//****************************************************************************//
 kxtj3_status_t KXTJ3::standby(bool _en)
 {
   uint8_t _ctrl;
+  kxtj3_status_t returnError = IMU_SUCCESS;
 
   // "Backup" KXTJ3_CTRL_REG1
   readRegister(&_ctrl, KXTJ3_CTRL_REG1);
@@ -266,7 +334,57 @@ kxtj3_status_t KXTJ3::standby(bool _en)
   else
     _ctrl |= (0x01 << 7); // disable standby-mode -> Bit7 = 1 = operating mode
 
-  return writeRegister(KXTJ3_CTRL_REG1, _ctrl);
+  returnError = writeRegister(KXTJ3_CTRL_REG1, _ctrl);
+
+  // If taking out of standby, follow start-up delay
+  if (!_en && returnError == IMU_SUCCESS) {
+    startupDelay();
+  }
+
+  return returnError;
+}
+
+//****************************************************************************//
+//
+//  Applies the start-up delay specified in Table 1 of the DataSheet
+//  Used when coming out of standby or softwareReset
+//
+//****************************************************************************//
+void KXTJ3::startupDelay(void)
+{
+#ifdef HIGH_RESOLUTION
+  if (accelSampleRate < 1)
+    delay(1300);
+  else if (accelSampleRate < 3)
+    delay(650);
+  else if (accelSampleRate < 6)
+    delay(330);
+  else if (accelSampleRate < 12)
+    delay(170);
+  else if (accelSampleRate < 25)
+    delay(90);
+  else if (accelSampleRate < 50)
+    delay(45);
+  else if (accelSampleRate < 100)
+    delay(25);
+  else if (accelSampleRate < 200)
+    delay(11);
+  else if (accelSampleRate < 400)
+    delay(6);
+  else if (accelSampleRate < 800)
+    delay(4);
+  else if (accelSampleRate < 1600)
+    delay(3);
+  else
+    delay(2);
+#else
+  if (accelSampleRate < 800 && accelSampleRate > 200)
+    delay(4);
+  else if (accelSampleRate < 1600 && accelSampleRate > 400)
+    delay(3);
+  else
+    delay(2);
+#endif
 }
 
 //****************************************************************************//
@@ -341,6 +459,7 @@ void KXTJ3::applySettings(void)
   // Now, write the patched together data
   _DEBBUG("KXTJ3_CTRL_REG1: 0x", dataToWrite);
   writeRegister(KXTJ3_CTRL_REG1, dataToWrite);
+  startupDelay();
 }
 
 //****************************************************************************//

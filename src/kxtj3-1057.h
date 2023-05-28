@@ -84,6 +84,9 @@ class KXTJ3
   // Writes an 8-bit byte;
   kxtj3_status_t writeRegister(uint8_t, uint8_t);
 
+  // Performs software reset
+  kxtj3_status_t softwareReset(void);
+
   // Configure Interrupts
   // @Threshold from 1 to 4095 counts
   // @moveDur   from 1 to 255 counts
@@ -113,14 +116,18 @@ class KXTJ3
   // ReadRegisterRegion takes a uint8 array address as input and reads
   //   a chunk of memory into that array.
   kxtj3_status_t readRegisterRegion(uint8_t *, uint8_t, uint8_t);
+
+  private:
+  // Start-up delay for coming out of standby or RAM reset
+  void startupDelay(void);
 };
 
 // Device Registers
 #define KXTJ3_WHO_AM_I 0x0F
 #define KXTJ3_DCST_RESP                                                        \
-  0x0C // used to verify proper integrated circuit functionality.It always has a
-       // byte value of 0x55
-
+  0x0C // used to verify proper integrated circuit functionality.
+       // It always has a byte value of 0x55
+#define KXTJ3_SOFT_REST      0x7F // used during software reset
 #define KXTJ3_OUT_X_L        0x06
 #define KXTJ3_OUT_X_H        0x07
 #define KXTJ3_OUT_Y_L        0x08
