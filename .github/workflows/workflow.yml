@@ -27,3 +27,12 @@ jobs:
         run: pio ci --lib=./ --board=d1_mini_pro --board=uno --board=adafruit_trinket_m0
         env:
           PLATFORMIO_CI_SRC: ${{ matrix.example }}
+
+  clang-format-checking:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: RafikFarhad/clang-format-github-action@v3
+        with:
+          sources: "src/*, examples/*"
+          style: file
