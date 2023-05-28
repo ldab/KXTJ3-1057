@@ -325,6 +325,7 @@ float KXTJ3::axisAccel(axis_t _axis)
 kxtj3_status_t KXTJ3::standby(bool _en)
 {
   uint8_t _ctrl;
+  kxtj3_status_t returnError = IMU_SUCCESS;
 
   // "Backup" KXTJ3_CTRL_REG1
   readRegister(&_ctrl, KXTJ3_CTRL_REG1);
@@ -353,34 +354,34 @@ kxtj3_status_t KXTJ3::standby(bool _en)
 void KXTJ3::startupDelay(void)
 {
 #ifdef HIGH_RESOLUTION
-  if (SampleRate < 1)
+  if (accelSampleRate < 1)
     delay(1300);
-  else if (SampleRate < 3)
+  else if (accelSampleRate < 3)
     delay(650);
-  else if (SampleRate < 6)
+  else if (accelSampleRate < 6)
     delay(330);
-  else if (SampleRate < 12)
+  else if (accelSampleRate < 12)
     delay(170);
-  else if (SampleRate < 25)
+  else if (accelSampleRate < 25)
     delay(90);
-  else if (SampleRate < 50)
+  else if (accelSampleRate < 50)
     delay(45);
-  else if (SampleRate < 100)
+  else if (accelSampleRate < 100)
     delay(25);
-  else if (SampleRate < 200)
+  else if (accelSampleRate < 200)
     delay(11);
-  else if (SampleRate < 400)
+  else if (accelSampleRate < 400)
     delay(6);
-  else if (SampleRate < 800)
+  else if (accelSampleRate < 800)
     delay(4);
-  else if (SampleRate < 1600)
+  else if (accelSampleRate < 1600)
     delay(3);
   else
     delay(2);
 #else
-  if (SampleRate < 800 && SampleRate > 200)
+  if (accelSampleRate < 800 && accelSampleRate > 200)
     delay(4);
-  else if (SampleRate < 1600 && SampleRate > 400)
+  else if (accelSampleRate < 1600 && accelSampleRate > 400)
     delay(3);
   else
     delay(2);
