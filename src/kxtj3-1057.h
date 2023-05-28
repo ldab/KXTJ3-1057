@@ -110,15 +110,16 @@ class KXTJ3
                          // 50, 100, 200, 400, 800, 1600Hz
   uint8_t accelRange;    // Accelerometer range = 2, 4, 8, 16g
 
-  // Start-up delay for coming out of standby or RAM reset
-  void startupDelay(void);
-
   // Apply settings at .begin()
   void applySettings(void);
 
   // ReadRegisterRegion takes a uint8 array address as input and reads
   //   a chunk of memory into that array.
   kxtj3_status_t readRegisterRegion(uint8_t *, uint8_t, uint8_t);
+
+  private:
+  // Start-up delay for coming out of standby or RAM reset
+  void startupDelay(void);
 };
 
 // Device Registers
