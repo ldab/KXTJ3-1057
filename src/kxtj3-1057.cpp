@@ -477,10 +477,10 @@ kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur,
 
   // Build INT_CTRL_REG1
 
-  uint8_t dataToWrite = 0x22; // Interrupt enabled, active LOW, non-latched
+  uint8_t dataToWrite = 0x20; // Interrupt enabled, active LOW, non-latched
 
   if (polarity == HIGH)
-    dataToWrite |= (0x01 << 5); // Active HIGH
+    dataToWrite |= (0x01 << 4); // Active HIGH
 
   _DEBBUG("KXTJ3_INT_CTRL_REG1: 0x", dataToWrite);
   returnError = writeRegister(KXTJ3_INT_CTRL_REG1, dataToWrite);
@@ -494,6 +494,47 @@ kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur,
   _reg1 |= (0x01 << 1);
 
   returnError = writeRegister(KXTJ3_CTRL_REG1, _reg1);
+
+  // Sets the Data Rate for the Wake-Up (motion detect) function to match ODR
+  // Start by checking DATA_CTRL_REG for the current ODR
+
+  returnError = readRegister(&_reg1, KXTJ3_DATA_CTRL_REG);
+
+  // Set ODRWU based on ODR
+  // Maximum ODRWU is 100 Hz
+
+  switch (_reg1) {
+  case 0x09:
+    dataToWrite = 0x01;
+    break;
+  case 0x0A:
+    dataToWrite = 0x02;
+    break;
+  case 0x0B:
+    dataToWrite = 0x03;
+    break;
+  case 0x00:
+    dataToWrite = 0x04;
+    break;
+  case 0x01:
+    dataToWrite = 0x05;
+    break;
+  case 0x02:
+    dataToWrite = 0x06;
+    break;
+  case 0x03:
+  case 0x04:
+  case 0x05:
+  case 0x06:
+  case 0x07:
+    dataToWrite = 0x07;
+    break;
+  default:
+    dataToWrite = 0x00;
+    break;
+  }
+
+  returnError = writeRegister(KXTJ3_CTRL_REG2, dataToWrite);
 
   // Build INT_CTRL_REG2
 
