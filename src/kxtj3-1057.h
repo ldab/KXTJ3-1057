@@ -28,13 +28,13 @@ Distributed as-is; no warranty is given.
 #ifdef KXTJ3_DEBUG
 namespace
 {
-  template <typename T> static void _DEBBUG(T last) { Serial.println(last); }
+  template <typename T> static void _DEBBUG(T last) { KXTJ3_DEBUG.println(last); }
 
   template <typename T, typename... Args>
   static void _DEBBUG(T head, Args... tail)
   {
-    Serial.print(head);
-    Serial.print(' ');
+    KXTJ3_DEBUG.print(head);
+    KXTJ3_DEBUG.print(' ');
     _DEBBUG(tail...);
   }
 }

@@ -12,7 +12,6 @@ Distributed as-is; no warranty is given.
 
 #include "kxtj3-1057.h"
 #include "stdint.h"
-
 #include "Wire.h"
 
 //****************************************************************************//
@@ -470,7 +469,7 @@ kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur,
                               uint8_t naDur, bool polarity)
 {
   // Note that to properly change the value of this register, the PC1 bit in
-  // CTRL_REG1must first be set to “0”.
+  // CTRL_REG1 must first be set to “0”.
   standby(true);
 
   kxtj3_status_t returnError = IMU_SUCCESS;
@@ -505,32 +504,32 @@ kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur,
 
   switch (_reg1) {
   case 0x09:
-    dataToWrite = 0x01;
+    dataToWrite = 0x01; // 1.563 Hz
     break;
   case 0x0A:
-    dataToWrite = 0x02;
+    dataToWrite = 0x02; // 3.125 Hz
     break;
   case 0x0B:
-    dataToWrite = 0x03;
+    dataToWrite = 0x03; // 6.25 Hz
     break;
   case 0x00:
-    dataToWrite = 0x04;
+    dataToWrite = 0x04; // 12.5 Hz
     break;
   case 0x01:
-    dataToWrite = 0x05;
+    dataToWrite = 0x05; // 25 Hz
     break;
   case 0x02:
-    dataToWrite = 0x06;
+    dataToWrite = 0x06; // 50 Hz
     break;
   case 0x03:
   case 0x04:
   case 0x05:
   case 0x06:
   case 0x07:
-    dataToWrite = 0x07;
+    dataToWrite = 0x07; // 100 Hz
     break;
   default:
-    dataToWrite = 0x00;
+    dataToWrite = 0x00; // 0.781 Hz
     break;
   }
 
