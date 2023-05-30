@@ -10,9 +10,10 @@ Uses Wire.h for i2c operation
 Distributed as-is; no warranty is given.
 ******************************************************************************/
 
-#include "Wire.h"
 #include "kxtj3-1057.h"
 #include "stdint.h"
+
+#include "Wire.h"
 
 //****************************************************************************//
 //
