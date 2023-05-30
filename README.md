@@ -32,7 +32,7 @@ Operating mode (HZ) | Low Power | High Resolution
 
 ## Interrupt Threshold
 
-Interrupt threshold sensitivity is compared to the top 12bits of the accelerometer 8g output value regardless of the resolution chosen:
+Interrupt threshold sensitivity is compared to the top 12bits of the accelerometer 8g output value regardless of the resolution chosen.
 
 > This value can be anything from 1 to 4095
 
@@ -40,7 +40,11 @@ Interrupt threshold sensitivity is compared to the top 12bits of the acceleromet
 
 ## Interrupt Duration
 
-Interrupt event duration to trigger the interrupt pin is a function of events and Sample Rate:
+Interrupt event duration to trigger the interrupt pin is a function of events and Sample Rate.
+
+Please note that in the context of Interrupt Duration, only Sample Rates up to 100 Hz are supported.
+
+If the IMU is set to a Sample Rate greater than 100 Hz, Interrupt Duration will use 100 Hz for its calculation.
 
 > This value can be anything from 1 to 255
 
@@ -48,7 +52,11 @@ Interrupt event duration to trigger the interrupt pin is a function of events an
 
 ## Non-Activity Duration
 
-Interrupt non-activity duration to *reset* the interrupt pin is a function of events and Sample Rate:
+Interrupt non-activity duration to *reset* the interrupt pin is a function of events and Sample Rate.
+
+As with Interrupt Duration, please note that only Sample Rates up to 100 Hz are supported.
+
+If the IMU is set to a Sample Rate greater than 100 Hz, Non-Activity Duration will use 100 Hz for its calculation.
 
 > This value can be anything from 1 to 255
 
