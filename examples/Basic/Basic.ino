@@ -55,7 +55,7 @@ void loop()
 
   int16_t dataHighres = 0;
 
-  if (myIMU.readRegisterInt16(&dataHighres, KXTJ3_OUT_X_L) != 0) {
+  if (myIMU.readRegisterInt16(&dataHighres, KXTJ3_OUT_X_L) == 0) {
     Serial.print(" Acceleration X RAW = ");
     Serial.println(dataHighres);
 
@@ -64,7 +64,7 @@ void loop()
     Serial.println(myIMU.axisAccel(X), 4);
   }
 
-  if (myIMU.readRegisterInt16(&dataHighres, KXTJ3_OUT_Y_L) != 0) {
+  if (myIMU.readRegisterInt16(&dataHighres, KXTJ3_OUT_Y_L) == 0) {
     Serial.print(" Acceleration Y RAW = ");
     Serial.println(dataHighres);
 
@@ -73,7 +73,7 @@ void loop()
     Serial.println(myIMU.axisAccel(Y), 4);
   }
 
-  if (myIMU.readRegisterInt16(&dataHighres, KXTJ3_OUT_Z_L) != 0) {
+  if (myIMU.readRegisterInt16(&dataHighres, KXTJ3_OUT_Z_L) == 0) {
     Serial.print(" Acceleration Z RAW = ");
     Serial.println(dataHighres);
 
