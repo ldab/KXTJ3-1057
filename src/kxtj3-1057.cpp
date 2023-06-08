@@ -10,6 +10,8 @@ Uses Wire.h for i2c operation
 Distributed as-is; no warranty is given.
 ******************************************************************************/
 
+#define KXTJ3_DEBUG Serial
+
 #include "kxtj3-1057.h"
 #include "stdint.h"
 
@@ -23,17 +25,16 @@ Distributed as-is; no warranty is given.
 KXTJ3::KXTJ3(uint8_t inputArg = 0x0E) { I2CAddress = inputArg; }
 
 kxtj3_status_t KXTJ3::begin(float SampleRate, uint8_t accRange, bool highResSet,
-                            bool debugSet, HardwareSerial *port)
+                            bool debugSet)
 {
   kxtj3_status_t returnError = IMU_SUCCESS;
   accelSampleRate            = SampleRate;
   accelRange                 = accRange;
   highRes                    = highResSet;
   debugMode                  = debugSet;
-  debugPort                  = port;
 
   if (debugMode) {
-    debugPort->println("Configuring IMU");
+    KXTJ3_DEBUG.println("Configuring IMU");
   }
 
   Wire.begin();
@@ -69,7 +70,7 @@ kxtj3_status_t KXTJ3::begin(float SampleRate, uint8_t accRange, bool highResSet,
   }
 
   if (debugMode) {
-    debugPort->println("Apply settings");
+    KXTJ3_DEBUG.println("Apply settings");
   }
   applySettings();
 
@@ -144,10 +145,10 @@ kxtj3_status_t KXTJ3::readRegister(uint8_t *outputPointer, uint8_t offset)
   }
 
   if (debugMode) {
-    debugPort->print("Read register 0x");
-    debugPort->print(offset);
-    debugPort->print(" = ");
-    debugPort->println(result);
+    KXTJ3_DEBUG.print("Read register 0x");
+    KXTJ3_DEBUG.print(offset);
+    KXTJ3_DEBUG.print(" = ");
+    KXTJ3_DEBUG.println(result);
   }
 
   *outputPointer = result;
@@ -170,10 +171,10 @@ kxtj3_status_t KXTJ3::readRegisterInt16(int16_t *outputPointer, uint8_t offset)
   int16_t output = (int16_t)myBuffer[0] | int16_t(myBuffer[1] << 8);
 
   if (debugMode && returnError == IMU_SUCCESS) {
-    debugPort->print("12 bit from 0x");
-    debugPort->print(offset);
-    debugPort->print(" = ");
-    debugPort->println(output);
+    KXTJ3_DEBUG.print("12 bit from 0x");
+    KXTJ3_DEBUG.print(offset);
+    KXTJ3_DEBUG.print(" = ");
+    KXTJ3_DEBUG.println(output);
   }
 
   *outputPointer = output;
@@ -446,8 +447,8 @@ void KXTJ3::applySettings(void)
 
   // Now, write the patched together data
   if (debugMode) {
-    debugPort->print("KXTJ3_DATA_CTRL_REG: 0x");
-    debugPort->println(dataToWrite);
+    KXTJ3_DEBUG.print("KXTJ3_DATA_CTRL_REG: 0x");
+    KXTJ3_DEBUG.println(dataToWrite);
   }
   writeRegister(KXTJ3_DATA_CTRL_REG, dataToWrite);
 
@@ -458,7 +459,7 @@ void KXTJ3::applySettings(void)
 
   if (highRes) {
     if (debugMode) {
-      debugPort->println("High Resolution set");
+      KXTJ3_DEBUG.println("High Resolution set");
     }
     dataToWrite = 0xC0;
   }
@@ -482,8 +483,8 @@ void KXTJ3::applySettings(void)
 
   // Now, write the patched together data
   if (debugMode) {
-    debugPort->print("KXTJ3_CTRL_REG1: 0x");
-    debugPort->println(dataToWrite);
+    KXTJ3_DEBUG.print("KXTJ3_CTRL_REG1: 0x");
+    KXTJ3_DEBUG.println(dataToWrite);
   }
   writeRegister(KXTJ3_CTRL_REG1, dataToWrite);
   startupDelay();
@@ -510,8 +511,8 @@ kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur,
     dataToWrite |= (0x01 << 4); // Active HIGH
 
   if (debugMode) {
-    debugPort->print("KXTJ3_INT_CTRL_REG1: 0x");
-    debugPort->println(dataToWrite);
+    KXTJ3_DEBUG.print("KXTJ3_INT_CTRL_REG1: 0x");
+    KXTJ3_DEBUG.println(dataToWrite);
   }
 
   returnError = writeRegister(KXTJ3_INT_CTRL_REG1, dataToWrite);
@@ -592,8 +593,8 @@ kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur,
   dataToWrite = 0xBF; // enable interrupt on all axis any direction - Unlatched
 
   if (debugMode) {
-    debugPort->print("KXTJ3_INT_CTRL_REG1: 0x");
-    debugPort->println(dataToWrite);
+    KXTJ3_DEBUG.print("KXTJ3_INT_CTRL_REG1: 0x");
+    KXTJ3_DEBUG.println(dataToWrite);
   }
 
   returnError = writeRegister(KXTJ3_INT_CTRL_REG2, dataToWrite);
@@ -607,8 +608,8 @@ kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur,
   dataToWrite = (uint8_t)(threshold >> 4);
 
   if (debugMode) {
-    debugPort->print("KXTJ3_WAKEUP_THRD_H: 0x");
-    debugPort->println(dataToWrite);
+    KXTJ3_DEBUG.print("KXTJ3_WAKEUP_THRD_H: 0x");
+    KXTJ3_DEBUG.println(dataToWrite);
   }
 
   returnError = writeRegister(KXTJ3_WAKEUP_THRD_H, dataToWrite);
@@ -620,8 +621,8 @@ kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur,
   dataToWrite = (uint8_t)(threshold << 4);
 
   if (debugMode) {
-    debugPort->print("KXTJ3_WAKEUP_THRD_L: 0x");
-    debugPort->println(dataToWrite);
+    KXTJ3_DEBUG.print("KXTJ3_WAKEUP_THRD_L: 0x");
+    KXTJ3_DEBUG.println(dataToWrite);
   }
 
   returnError = writeRegister(KXTJ3_WAKEUP_THRD_L, dataToWrite);
@@ -637,8 +638,8 @@ kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur,
   dataToWrite = moveDur;
 
   if (debugMode) {
-    debugPort->print("KXTJ3_WAKEUP_COUNTER: 0x");
-    debugPort->println(dataToWrite);
+    KXTJ3_DEBUG.print("KXTJ3_WAKEUP_COUNTER: 0x");
+    KXTJ3_DEBUG.println(dataToWrite);
   }
 
   returnError = writeRegister(KXTJ3_WAKEUP_COUNTER, dataToWrite);
@@ -654,8 +655,8 @@ kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur,
   dataToWrite = naDur;
 
   if (debugMode) {
-    debugPort->print("KXTJ3_NA_COUNTER: 0x");
-    debugPort->println(dataToWrite);
+    KXTJ3_DEBUG.print("KXTJ3_NA_COUNTER: 0x");
+    KXTJ3_DEBUG.println(dataToWrite);
   }
 
   returnError = writeRegister(KXTJ3_NA_COUNTER, dataToWrite);
