@@ -21,27 +21,6 @@ Distributed as-is; no warranty is given.
 #include "WProgram.h"
 #endif
 
-#if defined LOW_POWER && defined HIGH_RESOLUTION
-#error Please choose between the 2 resolution types
-#endif
-
-#ifdef KXTJ3_DEBUG
-namespace
-{
-  template <typename T> static void _DEBBUG(T last) { Serial.println(last); }
-
-  template <typename T, typename... Args>
-  static void _DEBBUG(T head, Args... tail)
-  {
-    Serial.print(head);
-    Serial.print(' ');
-    _DEBBUG(tail...);
-  }
-}
-#else
-#define _DEBBUG(...)
-#endif
-
 // Print variable name
 #define getName(var) #var
 
@@ -72,7 +51,8 @@ class KXTJ3
   Sample Rate - 0.781, 1.563, 3.125, 6.25, 12.5, 25, 50, 100, 200, 400, 800,
   1600Hz Output Data Rates ≥400Hz will force device into High Resolution mode
   */
-  kxtj3_status_t begin(float SampleRate, uint8_t accRange);
+  kxtj3_status_t begin(float SampleRate, uint8_t accRange,
+                       bool highResSet = false, bool debugSet = false);
 
   // readRegister reads one 8-bit register
   kxtj3_status_t readRegister(uint8_t *outputPointer, uint8_t offset);
@@ -105,11 +85,8 @@ class KXTJ3
   kxtj3_status_t standby(bool _en = true);
 
   private:
-#ifdef HIGH_RESOLUTION
-  bool highRes = true;
-#else
-  bool highRes = false;
-#endif
+  bool highRes   = false;
+  bool debugMode = false;
   uint8_t I2CAddress;
   float accelSampleRate; // Sample Rate - 0.781, 1.563, 3.125, 6.25, 12.5, 25,
                          // 50, 100, 200, 400, 800, 1600Hz
