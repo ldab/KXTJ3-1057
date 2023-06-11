@@ -10,6 +10,7 @@ Uses Wire.h for i2c operation
 Distributed as-is; no warranty is given.
 ******************************************************************************/
 
+// Changes which Serial port to use for debug messages (Serial0, Serial1, etc)
 #define KXTJ3_DEBUG Serial
 
 #include "kxtj3-1057.h"

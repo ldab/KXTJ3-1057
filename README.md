@@ -11,7 +11,6 @@ Minimalistic library for motion detection using low cost KXTJ3-1057, 3-axis MEMS
 ## TODO
 
 - [ ] `returnError` Handler
-- [ ] Update Keywords
 
 ###  Current consumption of operating modes μA
 
