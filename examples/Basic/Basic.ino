@@ -28,11 +28,12 @@ void setup()
   Serial.begin(115200);
   delay(1000); // wait until serial is open...
 
-  if (myIMU.begin(sampleRate, accelRange, highRes) !=
+  if (myIMU.begin(sampleRate, accelRange, highRes) ==
   IMU_SUCCESS) {
-    Serial.println("Failed to initialize IMU.");
-  } else {
     Serial.println("IMU initialized.");
+  } else {
+    Serial.println("Failed to initialize IMU.");
+    while(true); // stop running sketch if failed
   }
 
   uint8_t readData = 0;
