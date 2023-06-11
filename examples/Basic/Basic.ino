@@ -1,8 +1,8 @@
 /****************************************************************
-kXTJ3-1057 Arduino
+KXTJ3-1057 for Arduino
 Leonardo Bispo
 May, 2020
-https://github.com/ldab/kxtj3-1057
+https://github.com/ldab/KXTJ3-1057
 Resources:
 Uses Wire.h for i2c operation
 
