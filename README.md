@@ -8,11 +8,6 @@ Minimalistic library for motion detection using low cost KXTJ3-1057, 3-axis MEMS
 
 [![GitHub last commit](https://img.shields.io/github/last-commit/ldab/KXTJ3-1057.svg?style=social)](https://github.com/ldab/KXTJ3-1057)
 
-## TODO
-
-- [ ] `returnError` Handler
-- [ ] Update Keywords
-
 ###  Current consumption of operating modes μA
 
 Operating mode (HZ) | Low Power | High Resolution
@@ -61,11 +56,6 @@ If the IMU is set to a Sample Rate greater than 100 Hz, Non-Activity Duration wi
 > This value can be anything from 1 to 255
 
 * i.e 5 event_counts / 6.25 Hz = 0.8 seconds
-
-## Known Limitations
-
-* Only 8 and 12 bits modes are implemented (14-bit is not);
-* Only non-latched interrupt is implemented;
 
 ## Credits
 

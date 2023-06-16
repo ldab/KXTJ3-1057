@@ -1,8 +1,8 @@
 /******************************************************************************
 KXTJ3-1057.h
 KXTJ3-1057 Arduino
-Leonardo Bispo
-May, 2020
+Leonardo Bispo & Nomake Wan
+June, 2023
 https://github.com/ldab/KXTJ3-1057
 Resources:
 Uses Wire.h for i2c operation
@@ -41,6 +41,16 @@ typedef enum {
   Z,
 } axis_t;
 
+typedef enum {
+  ZPOS = 0,
+  ZNEG,
+  YPOS,
+  YNEG,
+  XPOS,
+  XNEG,
+  NONE = -1,
+} wu_axis_t;
+
 class KXTJ3
 {
   public:
@@ -53,6 +63,9 @@ class KXTJ3
   */
   kxtj3_status_t begin(float SampleRate, uint8_t accRange,
                        bool highResSet = false, bool debugSet = false);
+
+  // Enables 14-bit operation mode for Accelerometer range 8g/16g
+  kxtj3_status_t enable14Bit(uint8_t accRange);
 
   // readRegister reads one 8-bit register
   kxtj3_status_t readRegister(uint8_t *outputPointer, uint8_t offset);
@@ -71,11 +84,33 @@ class KXTJ3
   // @Threshold from 1 to 4095 counts
   // @moveDur   from 1 to 255 counts
   // @naDur			from 1 to 255 counts
+  // @polarity changes active low/high of physical interrupt pin
+  // @wuRate    from 0.781 to 100Hz; -1 uses IMU data rate instead
+  // @latched sets whether to use latched or unlatched interrupt
+  // @pulsed sets whether to pulse the interrupt pin when active
+  // @motion sets whether to trigger interrupt with wake-up function
+  // @dataReady sets whether to trigger interrupt when new data is ready
+  // @intPin sets whether to enable the interrupt pin or not
   // Threshold (g) = threshold (counts) / 256(counts/g)
   // timeDur (sec) = WAKEUP_COUNTER (counts) / Wake-Up Function ODR(Hz)
   // Non-ActivityTime (sec) = NA_COUNTER (counts) / Wake-Up Function ODR(Hz)
   kxtj3_status_t intConf(uint16_t threshold, uint8_t moveDur, uint8_t naDur,
-                         bool polarity = HIGH);
+                         bool polarity = HIGH, float wuRate = -1,
+                         bool latched = false, bool pulsed = false,
+                         bool motion = true, bool dataReady = false,
+                         bool intPin = true);
+
+  // Checks to see if new data is ready (only works if DRDY interrupt enabled)
+  bool dataReady(void);
+
+  // Checks if the reason for the interrupt is the Wake-Up Function if enabled
+  bool motionDetected(void);
+
+  // Returns the direction that caused the Wake-Up Function to trigger
+  wu_axis_t motionDirection(void);
+
+  // Resets the interrupt latch
+  kxtj3_status_t resetInterrupt(void);
 
   // Read axis acceleration as Float
   float axisAccel(axis_t _axis);
@@ -87,13 +122,14 @@ class KXTJ3
   private:
   bool highRes   = false;
   bool debugMode = false;
+  bool en14Bit   = false;
   uint8_t I2CAddress;
   float accelSampleRate; // Sample Rate - 0.781, 1.563, 3.125, 6.25, 12.5, 25,
                          // 50, 100, 200, 400, 800, 1600Hz
   uint8_t accelRange;    // Accelerometer range = 2, 4, 8, 16g
 
   // Apply settings at .begin()
-  void applySettings(void);
+  kxtj3_status_t applySettings(void);
 
   // ReadRegisterRegion takes a uint8 array address as input and reads
   //   a chunk of memory into that array.
@@ -108,30 +144,32 @@ class KXTJ3
 #define KXTJ3_DCST_RESP                                                        \
   0x0C // used to verify proper integrated circuit functionality.
        // It always has a byte value of 0x55
-#define KXTJ3_SOFT_REST      0x7F // used during software reset
-#define KXTJ3_OUT_X_L        0x06
-#define KXTJ3_OUT_X_H        0x07
-#define KXTJ3_OUT_Y_L        0x08
-#define KXTJ3_OUT_Y_H        0x09
-#define KXTJ3_OUT_Z_L        0x0A
-#define KXTJ3_OUT_Z_H        0x0B
+#define KXTJ3_SOFT_REST          0x7F // used during software reset
+#define KXTJ3_XOUT_L             0x06
+#define KXTJ3_XOUT_H             0x07
+#define KXTJ3_YOUT_L             0x08
+#define KXTJ3_YOUT_H             0x09
+#define KXTJ3_ZOUT_L             0x0A
+#define KXTJ3_ZOUT_H             0x0B
 
-#define KXTJ3_STATUS         0x18
-#define KXTJ3_INT_SOURCE1    0x16
-#define KXTJ3_INT_SOURCE2    0x17
+#define KXTJ3_STATUS_REG         0x18
+#define KXTJ3_INT_SOURCE1        0x16
+#define KXTJ3_INT_SOURCE2        0x17
+#define KXTJ3_INT_REL            0x1A
 
-#define KXTJ3_CTRL_REG1      0x1B // *
-#define KXTJ3_CTRL_REG2      0x1D // *
+#define KXTJ3_CTRL_REG1          0x1B // *
+#define KXTJ3_CTRL_REG2          0x1D // *
 
-#define KXTJ3_INT_CTRL_REG1  0x1E // *
-#define KXTJ3_INT_CTRL_REG2  0x1F // *
+#define KXTJ3_INT_CTRL_REG1      0x1E // *
+#define KXTJ3_INT_CTRL_REG2      0x1F // *
 
-#define KXTJ3_DATA_CTRL_REG  0x21 // *
-#define KXTJ3_WAKEUP_COUNTER 0x29 // *
-#define KXTJ3_NA_COUNTER     0x2A // *
+#define KXTJ3_DATA_CTRL_REG      0x21 // *
+#define KXTJ3_WAKEUP_COUNTER     0x29 // *
+#define KXTJ3_NA_COUNTER         0x2A // *
+#define KXTJ3_SELF_TEST          0x3A // *
 
-#define KXTJ3_WAKEUP_THRD_H  0x6A // *
-#define KXTJ3_WAKEUP_THRD_L  0x6B // *
+#define KXTJ3_WAKEUP_THRESHOLD_H 0x6A // *
+#define KXTJ3_WAKEUP_THRESHOLD_L 0x6B // *
 
 // * Note that to properly change the value of this register, the PC1 bit in
 // CTRL_REG1 must first be set to “0”.
