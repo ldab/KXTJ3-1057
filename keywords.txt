@@ -22,6 +22,10 @@ readRegisterInt16	KEYWORD2
 writeRegister	KEYWORD2
 softwareReset	KEYWORD2
 intConf	KEYWORD2
+dataReady	KEYWORD2
+motionDetected	KEYWORD2
+motionDirection	KEYWORD2
+resetInterrupt	KEYWORD2
 axisAccel	KEYWORD2
 standby	KEYWORD2
 
