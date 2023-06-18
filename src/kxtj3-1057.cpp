@@ -798,6 +798,93 @@ kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur,
   return returnError;
 }
 
+kxtj3_status_t KXTJ3::intDisableAxis(uint8_t first)
+{
+  // Create temporary variables
+  kxtj3_status_t returnError = IMU_SUCCESS;
+  uint8_t dataToWrite        = 0b00111111;
+  uint8_t bitCheck;
+
+  // Check to see if ULMODE bit is set and set if so
+  returnError = readRegister(&bitCheck, KXTJ3_INT_CTRL_REG2);
+  if (bitCheck & (0x01 << 7))
+    dataToWrite |= (0x01 << 7);
+
+  // Rebuild INT_CTRL_REG2 with new axis data using XOR
+  dataToWrite ^= first;
+
+  // Write the new values to INT_CTRL_REG2
+  if (debugMode) {
+    KXTJ3_DEBUG.print("KXTJ3_INT_CTRL_REG2: 0x");
+    KXTJ3_DEBUG.println(dataToWrite);
+  }
+
+  returnError = writeRegister(KXTJ3_INT_CTRL_REG2, dataToWrite);
+
+  return returnError;
+}
+
+void KXTJ3::intDisableAxis(uint8_t first, uint8_t second)
+{
+  uint8_t temp = 0x00;
+  if (first == NONE || second == NONE) {
+    intDisableAxis(temp); // send 0x00 to enable all axes
+  } else {
+    // combine the requested axes and submit to base function
+    temp |= first;
+    temp |= second;
+    intDisableAxis(temp);
+  }
+}
+
+void KXTJ3::intDisableAxis(uint8_t first, uint8_t second, uint8_t third)
+{
+  uint8_t temp = 0x00;
+  if (first == NONE || second == NONE || third == NONE) {
+    intDisableAxis(temp); // send 0x00 to enable all axes
+  } else {
+    // combine the requested axes and submit to base function
+    temp |= first;
+    temp |= second;
+    temp |= third;
+    intDisableAxis(temp);
+  }
+}
+
+void KXTJ3::intDisableAxis(uint8_t first, uint8_t second, uint8_t third,
+                           uint8_t fourth)
+{
+  uint8_t temp = 0x00;
+  if (first == NONE || second == NONE || third == NONE || fourth == NONE) {
+    intDisableAxis(temp); // send 0x00 to enable all axes
+  } else {
+    // combine the requested axes and submit to base function
+    temp |= first;
+    temp |= second;
+    temp |= third;
+    temp |= fourth;
+    intDisableAxis(temp);
+  }
+}
+
+void KXTJ3::intDisableAxis(uint8_t first, uint8_t second, uint8_t third,
+                           uint8_t fourth, uint8_t fifth)
+{
+  uint8_t temp = 0x00;
+  if (first == NONE || second == NONE || third == NONE || fourth == NONE ||
+      fifth == NONE) {
+    intDisableAxis(temp); // send 0x00 to enable all axes
+  } else {
+    // combine the requested axes and submit to base function
+    temp |= first;
+    temp |= second;
+    temp |= third;
+    temp |= fourth;
+    temp |= fifth;
+    intDisableAxis(temp);
+  }
+}
+
 bool KXTJ3::dataReady(void)
 {
   uint8_t _reg1;

@@ -42,13 +42,13 @@ typedef enum {
 } axis_t;
 
 typedef enum {
-  ZPOS = 0,
-  ZNEG,
-  YPOS,
-  YNEG,
-  XPOS,
-  XNEG,
-  NONE = -1,
+  NONE = 0,
+  ZPOS = 1,
+  ZNEG = 2,
+  YPOS = 4,
+  YNEG = 8,
+  XPOS = 16,
+  XNEG = 32,
 } wu_axis_t;
 
 class KXTJ3
@@ -99,6 +99,14 @@ class KXTJ3
                          bool latched = false, bool pulsed = false,
                          bool motion = true, bool dataReady = false,
                          bool intPin = true);
+
+  kxtj3_status_t intDisableAxis(uint8_t first);
+  void intDisableAxis(uint8_t first, uint8_t second);
+  void intDisableAxis(uint8_t first, uint8_t second, uint8_t third);
+  void intDisableAxis(uint8_t first, uint8_t second, uint8_t third,
+                      uint8_t fourth);
+  void intDisableAxis(uint8_t first, uint8_t second, uint8_t third,
+                      uint8_t fourth, uint8_t fifth);
 
   // Checks to see if new data is ready (only works if DRDY interrupt enabled)
   bool dataReady(void);
