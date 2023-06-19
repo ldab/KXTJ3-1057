@@ -81,13 +81,13 @@ Writes a single 8-bit value `dataToWrite` to the 8-bit register specified in `of
 
 This function initializes the IMU's Interrupt Engine. An overview of the system can be found below in the Interrupt Engine section, while a more in-depth description can be found in the datasheet. Example sketches for various configurations are also provided. The parameters for this function are as follows:
 
-+ `moveThreshold`: See Motion Threshold section below. Accepted values are `1` through `4095`.
++ `moveThreshold`: See Motion Threshold section below. Accepted values are `-2048` through `2047`.
 + `moveDuration`: See Motion Duration section below. Accepted values are `1` through `255`.
 + `naDuration`: See Non-Activity Duration section below. Accepted values are `1` through `255`.
 + `polarity`: Sets whether the INT pin will be active `LOW` or active `HIGH`.
 + `wuRate`: Sets the sample rate for the motion detection function. Valid values are the same as the IMU up to `100` Hz. Defaults to `-1` to lock sample rate to the IMU's sample rate (up to 100 Hz).
-+ `latched`: Set to `true` to use latched interrupt mode. Defaults to `false` for unlatched operation.
-+ `pulsed`: Set to `true` to use pulsed interrupt mode. Defaults to `false` for unlatched operation.
++ `latched`: Set to `true` to use latched interrupt mode. Defaults to `false` for unlatched operation. See Table 15 of the datasheet for more details.
++ `pulsed`: Set to `true` to use pulsed interrupt mode. Defaults to `false` for unlatched operation. See Table 15 of the datasheet for more details.
 + `motion`: Set to `false` to disable the Motion Detection function. Defaults to `true`.
 + `dataReady`: Set to `true` to enable using the interrupt engine to signal availability of new acceleration data. Defaults to `false`.
 + `intPin`: Set to `false` to disable triggering the INT pin for interrupts and use only I2C. Defaults to `true`.
@@ -120,17 +120,15 @@ This library includes an I2C error handler on all functions except `axisAccel`, 
 
 ### Motion Threshold
 
-Interrupt threshold sensitivity is compared to the top 12bits of the accelerometer 8g output value regardless of the resolution chosen. This value can be anything from `1` to `4095`.
+Interrupt threshold sensitivity is compared to the top 12bits of the accelerometer 8g output value regardless of the resolution chosen. This value can be anything from `-2048` to `2047`.
 
-* i.e 0.0039 (1/256) to 16 g (4095/256)
+* i.e -8g (-2048/256) to 0.0039g (1/256) to 8g (2047/256)
 
 ### Motion Duration
 
-Interrupt event duration to trigger the interrupt pin is a function of events and Sample Rate.
+This is the amount of time that the change in acceleration must be above the Motion Threshold before the Motion Detection interrupt will be triggered, and is a function of Duration and Sample Rate.
 
-Please note that in the context of Interrupt Duration, only Sample Rates up to 100 Hz are supported.
-
-If the IMU is set to a Sample Rate greater than 100 Hz, Interrupt Duration will use 100 Hz for its calculation.
+Please note that in the context of Interrupt Duration, only Sample Rates up to 100 Hz are supported. If the IMU is set to a Sample Rate greater than 100 Hz and the Motion Detection Sample Rate is locked to IMU Sample Rate, Interrupt Duration will use 100 Hz for its calculation.
 
 > This value can be anything from 1 to 255
 
@@ -138,11 +136,9 @@ If the IMU is set to a Sample Rate greater than 100 Hz, Interrupt Duration will 
 
 ### Non-Activity Duration
 
-Interrupt non-activity duration to *reset* the interrupt pin is a function of events and Sample Rate.
+This is the amount of time that the change in acceleration must be below the Motion Threshold before another Motion Detection interrupt can be triggered, and is a function of Duration and Sample Rate.
 
-As with Interrupt Duration, please note that only Sample Rates up to 100 Hz are supported.
-
-If the IMU is set to a Sample Rate greater than 100 Hz, Non-Activity Duration will use 100 Hz for its calculation.
+As with Interrupt Duration, please note that only Sample Rates up to 100 Hz are supported. If the IMU is set to a Sample Rate greater than 100 Hz and the Motion Detection Sample Rate is locked to IMU Sample Rate, Non-Activity Duration will use 100 Hz for its calculation.
 
 > This value can be anything from 1 to 255
 

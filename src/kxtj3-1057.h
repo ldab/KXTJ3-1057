@@ -78,7 +78,7 @@ class KXTJ3
   kxtj3_status_t writeRegister(uint8_t offset, uint8_t dataToWrite);
 
   // Configure Interrupts
-  // @Threshold from 1 to 4095 counts
+  // @Threshold from -2048 to 2047 counts
   // @moveDur   from 1 to 255 counts
   // @naDur			from 1 to 255 counts
   // @polarity changes active low/high of physical interrupt pin
@@ -91,7 +91,7 @@ class KXTJ3
   // Threshold (g) = threshold (counts) / 256(counts/g)
   // timeDur (sec) = WAKEUP_COUNTER (counts) / Wake-Up Function ODR(Hz)
   // Non-ActivityTime (sec) = NA_COUNTER (counts) / Wake-Up Function ODR(Hz)
-  kxtj3_status_t intConf(uint16_t threshold, uint8_t moveDur, uint8_t naDur,
+  kxtj3_status_t intConf(int16_t threshold, uint8_t moveDur, uint8_t naDur,
                          bool polarity = HIGH, float wuRate = -1,
                          bool latched = false, bool pulsed = false,
                          bool motion = true, bool dataReady = false,

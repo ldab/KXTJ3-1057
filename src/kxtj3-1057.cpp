@@ -570,7 +570,7 @@ kxtj3_status_t KXTJ3::enable14Bit(uint8_t accRange)
 //  Configure interrupt, stop or move, threshold and duration
 //	Duration, steps and maximum values depend on the ODR chosen.
 //****************************************************************************//
-kxtj3_status_t KXTJ3::intConf(uint16_t threshold, uint8_t moveDur,
+kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur,
                               uint8_t naDur, bool polarity, float wuRate,
                               bool latched, bool pulsed, bool motion,
                               bool dataReady, bool intPin)
