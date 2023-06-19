@@ -20,7 +20,6 @@ begin	KEYWORD2
 readRegister	KEYWORD2
 readRegisterInt16	KEYWORD2
 writeRegister	KEYWORD2
-softwareReset	KEYWORD2
 intConf	KEYWORD2
 dataReady	KEYWORD2
 motionDetected	KEYWORD2

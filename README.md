@@ -38,46 +38,46 @@ Operating mode (HZ) | Low Power | High Resolution
 
 ## Function Descriptions
 
-> KXTJ3 (addr)
+### KXTJ3 (addr)
 
 This is the constructor. addr can be either `0x0E` or `0x0F` depending on ADDR pin configuration (please see Table 6 of the datasheet).
 Call this with `KXTJ3 myIMU(0x0E)` where myIMU is whatever name you wish to use for that instance of KXTJ3.
 
->begin(sampleRate, accRange, highResMode, debugMode)
+### begin(sampleRate, accRange, highResMode, debugMode)
 
 Call this to initialize the IMU. `sampleRate` and `accRange` are required. `highResMode` and `debugMode` default to `false`.
 Sample Rates can be found in the power consumption table above. Accelerometer ranges are `2`g/`4`g/`8`g/`16`g.
 If `highResMode` is `false` the IMU will use 8-bit low power mode. If `true`, it will use 12-bit high-resolution mode.
 If `debugMode` is `true` then debug messages will be printed to the serial monitor for all IMU communication. By default Debug Mode uses `Serial` for output; this can be changed in `kxtj3-1057.cpp` by changing the `#define KXTJ3_DEBUG Serial` line.
 
->enable14Bit(accRange)
+### enable14Bit(accRange)
 
 Call this to switch the IMU to 14-bit operation mode. 14-bit operation is only available with `8`g or `16`g ranges.
 An example sketch is provided to demonstrate the use of 14-bit mode for the 16g range.
 
->standby(enabled)
+### standby(enabled)
 
 This puts the IMU into 0.9 μA standby mode. Defaults to `true`. Set to `false` to take out of standby.
 
->axisAccel(axis)
+### axisAccel(axis)
 
 This returns a `float` with the g reading of the specified `axis`. Valid axes are `X`, `Y`, and `Z`.
 
->readRegister(outputPointer, offset)
+### readRegister(outputPointer, offset)
 
 Reads the contents of an 8-bit register at address `offset` into variable `outputPointer`. All register names are preceded by `KXTJ3_` Please see the datasheet for the names of all available registers that can be passed to `offset`. The basic sketch demonstrates this function by reading the IMU's `KXTJ3_WHO_AM_I` register.
 
->readRegisterInt16(outputPointer, offset)
+### readRegisterInt16(outputPointer, offset)
 
 Reads the contents of two sequential 8-bit registers starting at address `offset` into a single 16-bit signed integer variable `outputPointer`. Very useful for reading the raw contents of axis acceleration data registers in high-resolution mode as this will handle 2's complement correctly. Please see the datasheet for the names of all available registers that can be passed to `offset`. The basic sketch also demonstrates proper use of this function to read axis acceleration data.
 
 Please note that if the IMU is in 8-bit low power mode, `readRegister` should be used instead to read only the high byte for each axis. This is because the lower byte register may contain junk data in 8-bit low power mode.
 
->writeRegister(offset, dataToWrite)
+### writeRegister(offset, dataToWrite)
 
 Writes a single 8-bit value `dataToWrite` to the 8-bit register specified in `offset`. Please see the datasheet for the names of all available registers that can be passed to `offset`. Also note that certain registers can only be changed if the IMU is in standby mode. As changing these special registers is handled by functions exposed by this library, we recommend using this library's functions to change configuration bytes rather than directly writing to configuration registers.
 
->intConf(moveThreshold, moveDuration, naDuration, polarity, wuRate, latched, pulsed, motion, dataReady, intPin)
+### intConf(moveThreshold, moveDuration, naDuration, polarity, wuRate, latched, pulsed, motion, dataReady, intPin)
 
 This function initializes the IMU's Interrupt Engine. An overview of the system can be found below in the Interrupt Engine section, while a more in-depth description can be found in the datasheet. Example sketches for various configurations are also provided. The parameters for this function are as follows:
 
@@ -92,23 +92,23 @@ This function initializes the IMU's Interrupt Engine. An overview of the system 
 + `dataReady`: Set to `true` to enable using the interrupt engine to signal availability of new acceleration data. Defaults to `false`.
 + `intPin`: Set to `false` to disable triggering the INT pin for interrupts and use only I2C. Defaults to `true`.
 
->intDisableAxis(interruptDirection)
+### intDisableAxis(interruptDirection)
 
 Allows you to selectively disable individual directions from triggering the Motion Detection interrupt, or reenable all directions. Valid values are `XNEG`, `XPOS`, `YNEG`, `YPOS`, `ZNEG`, `ZPOS`, and `NONE`. Accepts up to five comma-separated values. Including `NONE` at any point will enable all directions regardless of other parameters. To disable all directions, please set the `motion` parameter in `intConf` to `false` instead.
 
->motionDetected()
+### motionDetected()
 
 Returns `true` or `false` if the Motion Detection interrupt has been triggered (if enabled).
 
->motionDirection()
+### motionDirection()
 
 If the Motion Detection interrupt has been triggered, this will return which direction triggered the interrupt. Return values are `XNEG`, `XPOS`, `YNEG`, `YPOS`, `ZNEG`, `ZPOS`, or `NONE` if the interrupt has not been triggered or has been reset.
 
->dataReady()
+### dataReady()
 
 Returns `true` or `false` if the New Data Ready interrupt has been triggered (if enabled).
 
->resetInterrupt()
+### resetInterrupt()
 
 Resets the interrupt latch if the Interrupt Engine is in latched operation mode.
 
