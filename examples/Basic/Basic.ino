@@ -23,8 +23,6 @@ KXTJ3 myIMU(0x0E); // Address can be 0x0E or 0x0F
 
 void setup()
 {
-  // put your setup code here, to run once:
-
   Serial.begin(115200);
   delay(1000); // wait until serial is open...
 
