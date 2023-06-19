@@ -53,12 +53,12 @@ void loop()
   // Take IMU out of standby
   myIMU.standby(false);
 
-  int8_t dataLowRes = 0;
+  uint8_t dataLowRes = 0;
 
   if (myIMU.readRegister(&dataLowRes, KXTJ3_XOUT_H) ==
   IMU_SUCCESS) {
     Serial.print(" Acceleration X RAW = ");
-    Serial.println(dataLowRes);
+    Serial.println((int8_t)dataLowRes);
 
     // Read accelerometer data in mg as Float
     Serial.print(" Acceleration X float = ");
@@ -68,7 +68,7 @@ void loop()
   if (myIMU.readRegister(&dataLowRes, KXTJ3_YOUT_H) ==
   IMU_SUCCESS) {
     Serial.print(" Acceleration Y RAW = ");
-    Serial.println(dataLowRes);
+    Serial.println((int8_t)dataLowRes);
 
     // Read accelerometer data in mg as Float
     Serial.print(" Acceleration Y float = ");
@@ -78,7 +78,7 @@ void loop()
   if (myIMU.readRegister(&dataLowRes, KXTJ3_ZOUT_H) ==
   IMU_SUCCESS) {
     Serial.print(" Acceleration Z RAW = ");
-    Serial.println(dataLowRes);
+    Serial.println((int8_t)dataLowRes);
 
     // Read accelerometer data in mg as Float
     Serial.print(" Acceleration Z float = ");

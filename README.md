@@ -65,13 +65,13 @@ This returns a `float` with the g reading of the specified `axis`. Valid axes ar
 
 ### readRegister(outputPointer, offset)
 
-Reads the contents of an 8-bit register at address `offset` into variable `outputPointer`. All register names are preceded by `KXTJ3_` Please see the datasheet for the names of all available registers that can be passed to `offset`. The basic sketch demonstrates this function by reading the IMU's `KXTJ3_WHO_AM_I` register.
+Reads the contents of an 8-bit register at address `offset` into a `uint8_t` variable `outputPointer`. All register names are preceded by `KXTJ3_` Please see the datasheet for the names of all available registers that can be passed to `offset`. The basic sketch demonstrates this function by reading the IMU's `KXTJ3_WHO_AM_I` register, as well as by reading acceleration data registers.
 
 ### readRegisterInt16(outputPointer, offset)
 
-Reads the contents of two sequential 8-bit registers starting at address `offset` into a single 16-bit signed integer variable `outputPointer`. Very useful for reading the raw contents of axis acceleration data registers in high-resolution mode as this will handle 2's complement correctly. Please see the datasheet for the names of all available registers that can be passed to `offset`. The basic sketch also demonstrates proper use of this function to read axis acceleration data.
+Reads the contents of two sequential 8-bit registers starting at address `offset` into a single `int16_t` variable `outputPointer`. Very useful for reading the raw contents of axis acceleration data registers in high-resolution mode as this will handle 2's complement correctly. Please see the datasheet for the names of all available registers that can be passed to `offset`. The 14-Bit Mode example sketch also demonstrates proper use of this function to read axis acceleration data.
 
-Please note that if the IMU is in 8-bit low power mode, `readRegister` should be used instead to read only the high byte for each axis. This is because the lower byte register may contain junk data in 8-bit low power mode.
+Please note that if the IMU is in 8-bit low power mode, `readRegister` should be used instead to read only the high byte register for each axis, followed by casting to `int8_t` to get the correct signed value. This is because the lower byte register may contain junk data in 8-bit low power mode.
 
 ### writeRegister(offset, dataToWrite)
 
