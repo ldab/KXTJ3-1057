@@ -61,7 +61,7 @@ class KXTJ3
   Sample Rate - 0.781, 1.563, 3.125, 6.25, 12.5, 25, 50, 100, 200, 400, 800,
   1600Hz Output Data Rates ≥400Hz will force device into High Resolution mode
   */
-  kxtj3_status_t begin(float SampleRate, uint8_t accRange,
+  kxtj3_status_t begin(float sampleRate, uint8_t accRange,
                        bool highResSet = false, bool debugSet = false);
 
   // Enables 14-bit operation mode for Accelerometer range 8g/16g
@@ -72,13 +72,10 @@ class KXTJ3
 
   // Reads two 8-bit regs, LSByte then MSByte order, and concatenates them.
   // Acts as a 16-bit read operation
-  kxtj3_status_t readRegisterInt16(int16_t *, uint8_t offset);
+  kxtj3_status_t readRegisterInt16(int16_t *outputPointer, uint8_t offset);
 
   // Writes an 8-bit byte;
-  kxtj3_status_t writeRegister(uint8_t, uint8_t);
-
-  // Performs software reset
-  kxtj3_status_t softwareReset(void);
+  kxtj3_status_t writeRegister(uint8_t offset, uint8_t dataToWrite);
 
   // Configure Interrupts
   // @Threshold from 1 to 4095 counts
@@ -101,12 +98,12 @@ class KXTJ3
                          bool intPin = true);
 
   kxtj3_status_t intDisableAxis(uint8_t first);
-  void intDisableAxis(uint8_t first, uint8_t second);
-  void intDisableAxis(uint8_t first, uint8_t second, uint8_t third);
-  void intDisableAxis(uint8_t first, uint8_t second, uint8_t third,
-                      uint8_t fourth);
-  void intDisableAxis(uint8_t first, uint8_t second, uint8_t third,
-                      uint8_t fourth, uint8_t fifth);
+  kxtj3_status_t intDisableAxis(uint8_t first, uint8_t second);
+  kxtj3_status_t intDisableAxis(uint8_t first, uint8_t second, uint8_t third);
+  kxtj3_status_t intDisableAxis(uint8_t first, uint8_t second, uint8_t third,
+                                uint8_t fourth);
+  kxtj3_status_t intDisableAxis(uint8_t first, uint8_t second, uint8_t third,
+                                uint8_t fourth, uint8_t fifth);
 
   // Checks to see if new data is ready (only works if DRDY interrupt enabled)
   bool dataReady(void);
@@ -139,11 +136,14 @@ class KXTJ3
   // Apply settings at .begin()
   kxtj3_status_t applySettings(void);
 
+  // Performs software reset
+  kxtj3_status_t softwareReset(void);
+
   // ReadRegisterRegion takes a uint8 array address as input and reads
   //   a chunk of memory into that array.
   kxtj3_status_t readRegisterRegion(uint8_t *, uint8_t, uint8_t);
 
-  // Start-up delay for coming out of standby or RAM reset
+  // Start-up delay for coming out of standby
   void startupDelay(void);
 };
 
