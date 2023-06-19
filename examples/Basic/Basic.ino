@@ -1,10 +1,11 @@
 /****************************************************************
 KXTJ3-1057 for Arduino
+Basic Example Sketch
 Leonardo Bispo
 May, 2020
 https://github.com/ldab/KXTJ3-1057
 Resources:
-Uses Wire.h for i2c operation
+Uses Wire.h for I2C operation
 
 Distributed as-is; no warranty is given.
 ****************************************************************/
@@ -37,9 +38,14 @@ void setup()
   uint8_t readData = 0;
 
   // Get the ID:
-  myIMU.readRegister(&readData, KXTJ3_WHO_AM_I);
+  if (myIMU.readRegister(&readData, KXTJ3_WHO_AM_I) ==
+  IMU_SUCCESS) {
   Serial.print("Who am I? 0x");
   Serial.println(readData, HEX);
+  } else {
+    Serial.println("Communication error, stopping.");
+	while(true); // stop running sketch if failed
+  }
 }
 
 void loop()
@@ -47,32 +53,32 @@ void loop()
   // Take IMU out of standby
   myIMU.standby(false);
 
-  int16_t dataHighres = 0;
+  int8_t dataLowRes = 0;
 
-  if (myIMU.readRegisterInt16(&dataHighres, KXTJ3_XOUT_L) ==
+  if (myIMU.readRegister(&dataLowRes, KXTJ3_XOUT_H) ==
   IMU_SUCCESS) {
     Serial.print(" Acceleration X RAW = ");
-    Serial.println(dataHighres);
+    Serial.println(dataLowRes);
 
     // Read accelerometer data in mg as Float
     Serial.print(" Acceleration X float = ");
     Serial.println(myIMU.axisAccel(X), 4);
   }
 
-  if (myIMU.readRegisterInt16(&dataHighres, KXTJ3_YOUT_L) ==
+  if (myIMU.readRegister(&dataLowRes, KXTJ3_YOUT_H) ==
   IMU_SUCCESS) {
     Serial.print(" Acceleration Y RAW = ");
-    Serial.println(dataHighres);
+    Serial.println(dataLowRes);
 
     // Read accelerometer data in mg as Float
     Serial.print(" Acceleration Y float = ");
     Serial.println(myIMU.axisAccel(Y), 4);
   }
 
-  if (myIMU.readRegisterInt16(&dataHighres, KXTJ3_ZOUT_L) ==
+  if (myIMU.readRegister(&dataLowRes, KXTJ3_ZOUT_H) ==
   IMU_SUCCESS) {
     Serial.print(" Acceleration Z RAW = ");
-    Serial.println(dataHighres);
+    Serial.println(dataLowRes);
 
     // Read accelerometer data in mg as Float
     Serial.print(" Acceleration Z float = ");

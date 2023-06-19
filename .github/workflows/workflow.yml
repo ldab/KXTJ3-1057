@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        example: [./examples/Basic/Basic.ino, ./examples/14BitMode/14BitMode.ino, ./examples/UnlatchedInterrupt/UnlatchedInterrupt.ino]
+        example: [./examples/Basic/Basic.ino, ./examples/14BitMode/14BitMode.ino, ./examples/UnlatchedInterrupt/UnlatchedInterrupt.ino, ./examples/LatchedInterrupt/LatchedInterrupt.ino]
 
     steps:
       - uses: actions/checkout@v3

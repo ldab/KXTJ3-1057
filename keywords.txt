@@ -21,6 +21,7 @@ readRegister	KEYWORD2
 readRegisterInt16	KEYWORD2
 writeRegister	KEYWORD2
 intConf	KEYWORD2
+intDisableAxis KEYWORD2
 dataReady	KEYWORD2
 motionDetected	KEYWORD2
 motionDirection	KEYWORD2
