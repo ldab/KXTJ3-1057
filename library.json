@@ -1,6 +1,6 @@
 {
     "name": "KXTJ3-1057",
-    "version": "0.0.2",
+    "version": "0.1.0",
     "description": "Motion detection without bells and whistles, simply works, low power",
     "keywords": "sensors, accelerometer, motion detection, motion detector, low power, mobile, battery, web, cloud, iot, gsm, gprs, gps, gnss",
     "authors":
