@@ -1,7 +1,7 @@
-https://github.com/arduino/Arduino/wiki/Arduino-IDE-1.5:-Library-specification
+https://arduino.github.io/arduino-cli/0.33/library-specification/#15-library-format-rev-22
 
 #######################################
-# Syntax Coloring Map For ExampleLibrary
+# Syntax Coloring Map For KXTJ3-1057
 #######################################
 
 #######################################
@@ -9,6 +9,9 @@ https://github.com/arduino/Arduino/wiki/Arduino-IDE-1.5:-Library-specification
 #######################################
 
 KXTJ3	KEYWORD1
+kxtj3_status_t	KEYWORD1
+axis_t	KEYWORD1
+wu_axis_t	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -17,7 +20,13 @@ KXTJ3	KEYWORD1
 begin	KEYWORD2
 readRegister	KEYWORD2
 readRegisterInt16	KEYWORD2
+writeRegister	KEYWORD2
 intConf	KEYWORD2
+intDisableAxis KEYWORD2
+dataReady	KEYWORD2
+motionDetected	KEYWORD2
+motionDirection	KEYWORD2
+resetInterrupt	KEYWORD2
 axisAccel	KEYWORD2
 standby	KEYWORD2
 
@@ -25,8 +34,48 @@ standby	KEYWORD2
 # Instances (KEYWORD2)
 #######################################
 
-KXTJ3 KEYWORD2
+KXTJ3	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
 #######################################
+
+IMU_SUCCESS	LITERAL1
+IMU_HW_ERROR	LITERAL1
+IMU_NOT_SUPPORTED	LITERAL1
+IMU_GENERIC_ERROR	LITERAL1
+IMU_OUT_OF_BOUNDS	LITERAL1
+IMU_ALL_ONES_WARNING	LITERAL1
+X	LITERAL1
+Y	LITERAL1
+Z	LITERAL1
+ZPOS	LITERAL1
+ZNEG	LITERAL1
+YPOS	LITERAL1
+YNEG	LITERAL1
+XPOS	LITERAL1
+XNEG	LITERAL1
+NONE	LITERAL1
+KXTJ3_WHO_AM_I	LITERAL1
+KXTJ3_DCST_RESP	LITERAL1
+KXTJ3_SOFT_REST	LITERAL1
+KXTJ3_XOUT_L	LITERAL1
+KXTJ3_XOUT_H	LITERAL1
+KXTJ3_YOUT_L	LITERAL1
+KXTJ3_YOUT_H	LITERAL1
+KXTJ3_ZOUT_L	LITERAL1
+KXTJ3_ZOUT_H	LITERAL1
+KXTJ3_STATUS_REG	LITERAL1
+KXTJ3_INT_SOURCE1	LITERAL1
+KXTJ3_INT_SOURCE2	LITERAL1
+KXTJ3_INT_REL	LITERAL1
+KXTJ3_CTRL_REG1	LITERAL1
+KXTJ3_CTRL_REG2	LITERAL1
+KXTJ3_INT_CTRL_REG1	LITERAL1
+KXTJ3_INT_CTRL_REG2	LITERAL1
+KXTJ3_DATA_CTRL_REG	LITERAL1
+KXTJ3_WAKEUP_COUNTER	LITERAL1
+KXTJ3_NA_COUNTER	LITERAL1
+KXTJ3_SELF_TEST	LITERAL1
+KXTJ3_WAKEUP_THRESHOLD_H	LITERAL1
+KXTJ3_WAKEUP_THRESHOLD_L	LITERAL1
