@@ -153,9 +153,9 @@ kxtj3_status_t KXTJ3::readRegister(uint8_t *outputPointer, uint8_t offset)
 
   if (debugMode) {
     KXTJ3_DEBUG.print("Read register 0x");
-    KXTJ3_DEBUG.print(offset);
-    KXTJ3_DEBUG.print(" = ");
-    KXTJ3_DEBUG.println(result);
+    KXTJ3_DEBUG.print(offset, HEX);
+    KXTJ3_DEBUG.print(" = 0x");
+    KXTJ3_DEBUG.println(result, HEX);
   }
 
   *outputPointer = result;
@@ -179,7 +179,7 @@ kxtj3_status_t KXTJ3::readRegisterInt16(int16_t *outputPointer, uint8_t offset)
 
   if (debugMode && returnError == IMU_SUCCESS) {
     KXTJ3_DEBUG.print("16 bits from 0x");
-    KXTJ3_DEBUG.print(offset);
+    KXTJ3_DEBUG.print(offset, HEX);
     KXTJ3_DEBUG.print(" = ");
     KXTJ3_DEBUG.println(output);
   } else if (returnError != IMU_SUCCESS) {
@@ -474,7 +474,7 @@ kxtj3_status_t KXTJ3::applySettings(void)
   // Now, write the patched together data
   if (debugMode) {
     KXTJ3_DEBUG.print("KXTJ3_DATA_CTRL_REG: 0x");
-    KXTJ3_DEBUG.println(dataToWrite);
+    KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
   returnError = writeRegister(KXTJ3_DATA_CTRL_REG, dataToWrite);
 
@@ -514,7 +514,7 @@ kxtj3_status_t KXTJ3::applySettings(void)
   // Now, write the patched together data
   if (debugMode) {
     KXTJ3_DEBUG.print("KXTJ3_CTRL_REG1: 0x");
-    KXTJ3_DEBUG.println(dataToWrite);
+    KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
   returnError = writeRegister(KXTJ3_CTRL_REG1, dataToWrite);
   startupDelay();
@@ -555,7 +555,7 @@ kxtj3_status_t KXTJ3::enable14Bit(uint8_t accRange)
   // Write the new data to CTRL_REG1
   if (debugMode) {
     KXTJ3_DEBUG.print("KXTJ3_CTRL_REG1: 0x");
-    KXTJ3_DEBUG.println(dataToWrite);
+    KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
   returnError = writeRegister(KXTJ3_CTRL_REG1, dataToWrite);
 
@@ -602,7 +602,7 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur,
 
   if (debugMode) {
     KXTJ3_DEBUG.print("KXTJ3_INT_CTRL_REG1: 0x");
-    KXTJ3_DEBUG.println(dataToWrite);
+    KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
   returnError = writeRegister(KXTJ3_INT_CTRL_REG1, dataToWrite);
@@ -628,7 +628,7 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur,
 
   if (debugMode) {
     KXTJ3_DEBUG.print("KXTJ3_CTRL_REG1: 0x");
-    KXTJ3_DEBUG.println(dataToWrite);
+    KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
   returnError = writeRegister(KXTJ3_CTRL_REG1, _reg1);
@@ -701,7 +701,7 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur,
 
   if (debugMode) {
     KXTJ3_DEBUG.print("KXTJ3_CTRL_REG2: 0x");
-    KXTJ3_DEBUG.println(dataToWrite);
+    KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
   returnError = writeRegister(KXTJ3_CTRL_REG2, dataToWrite);
@@ -719,7 +719,7 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur,
 
   if (debugMode) {
     KXTJ3_DEBUG.print("KXTJ3_INT_CTRL_REG2: 0x");
-    KXTJ3_DEBUG.println(dataToWrite);
+    KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
   returnError = writeRegister(KXTJ3_INT_CTRL_REG2, dataToWrite);
@@ -734,7 +734,7 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur,
 
   if (debugMode) {
     KXTJ3_DEBUG.print("KXTJ3_WAKEUP_THRESHOLD_H: 0x");
-    KXTJ3_DEBUG.println(dataToWrite);
+    KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
   returnError = writeRegister(KXTJ3_WAKEUP_THRESHOLD_H, dataToWrite);
@@ -747,7 +747,7 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur,
 
   if (debugMode) {
     KXTJ3_DEBUG.print("KXTJ3_WAKEUP_THRESHOLD_L: 0x");
-    KXTJ3_DEBUG.println(dataToWrite);
+    KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
   returnError = writeRegister(KXTJ3_WAKEUP_THRESHOLD_L, dataToWrite);
@@ -764,7 +764,7 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur,
 
   if (debugMode) {
     KXTJ3_DEBUG.print("KXTJ3_WAKEUP_COUNTER: 0x");
-    KXTJ3_DEBUG.println(dataToWrite);
+    KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
   returnError = writeRegister(KXTJ3_WAKEUP_COUNTER, dataToWrite);
@@ -781,7 +781,7 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur,
 
   if (debugMode) {
     KXTJ3_DEBUG.print("KXTJ3_NA_COUNTER: 0x");
-    KXTJ3_DEBUG.println(dataToWrite);
+    KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
   returnError = writeRegister(KXTJ3_NA_COUNTER, dataToWrite);
@@ -814,7 +814,7 @@ kxtj3_status_t KXTJ3::intDisableAxis(uint8_t first)
   // Write the new values to INT_CTRL_REG2
   if (debugMode) {
     KXTJ3_DEBUG.print("KXTJ3_INT_CTRL_REG2: 0x");
-    KXTJ3_DEBUG.println(dataToWrite);
+    KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
   returnError = writeRegister(KXTJ3_INT_CTRL_REG2, dataToWrite);
