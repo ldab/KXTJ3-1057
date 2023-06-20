@@ -11,6 +11,7 @@ https://arduino.github.io/arduino-cli/0.33/library-specification/#15-library-for
 KXTJ3	KEYWORD1
 kxtj3_status_t	KEYWORD1
 axis_t	KEYWORD1
+wu_axis_t	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
