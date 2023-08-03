@@ -42,13 +42,14 @@ typedef enum {
 } axis_t;
 
 typedef enum {
-  NONE = 0,
-  ZPOS = 1,
-  ZNEG = 2,
-  YPOS = 4,
-  YNEG = 8,
-  XPOS = 16,
-  XNEG = 32,
+  BLANK = 0,
+  ZPOS  = 1,
+  ZNEG  = 2,
+  YPOS  = 4,
+  YNEG  = 8,
+  XPOS  = 16,
+  XNEG  = 32,
+  NONE  = 64,
 } wu_axis_t;
 
 class KXTJ3

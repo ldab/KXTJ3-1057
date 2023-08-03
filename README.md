@@ -132,7 +132,7 @@ Please note that in the context of Interrupt Duration, only Sample Rates up to 1
 
 > This value can be anything from 1 to 255
 
-* i.e 5 event_counts / 6.25 Hz = 0.8 seconds
+* i.e. 5 event_counts / 6.25 Hz = 0.8 seconds
 
 ### Non-Activity Duration
 
@@ -142,7 +142,7 @@ As with Interrupt Duration, please note that only Sample Rates up to 100 Hz are 
 
 > This value can be anything from 1 to 255
 
-* i.e 5 event_counts / 6.25 Hz = 0.8 seconds
+* i.e. 5 event_counts / 6.25 Hz = 0.8 seconds
 
 ## Credits
 
