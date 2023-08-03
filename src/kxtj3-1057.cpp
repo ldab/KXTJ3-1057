@@ -796,9 +796,9 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur, uint8_t naDur,
   return returnError;
 }
 
-kxtj3_status_t KXTJ3::intDisableAxis(uint8_t first, uint8_t second,
-                                     uint8_t third, uint8_t fourth,
-                                     uint8_t fifth)
+kxtj3_status_t KXTJ3::intDisableAxis(wu_axis_t first, wu_axis_t second,
+                                     wu_axis_t third, wu_axis_t fourth,
+                                     wu_axis_t fifth)
 {
   // Create temporary variables
   kxtj3_status_t returnError = IMU_SUCCESS;
@@ -813,8 +813,8 @@ kxtj3_status_t KXTJ3::intDisableAxis(uint8_t first, uint8_t second,
   if (bitCheck & (0x01 << 7))
     dataToWrite |= (0x01 << 7);
 
-  if (first == NONE || second == NONE || third == NONE || fourth == NONE ||
-      fifth == NONE) {
+  if (first & NONE || second & NONE || third & NONE || fourth & NONE ||
+      fifth & NONE) {
     // Rebuild INT_CTRL_REG2 with 0x00 using XOR to enable all axes
     dataToWrite ^= temp;
   } else {
@@ -840,24 +840,24 @@ kxtj3_status_t KXTJ3::intDisableAxis(uint8_t first, uint8_t second,
   return returnError;
 }
 
-kxtj3_status_t KXTJ3::intDisableAxis(uint8_t first)
+kxtj3_status_t KXTJ3::intDisableAxis(wu_axis_t first)
 {
   return intDisableAxis(first, BLANK, BLANK, BLANK, BLANK);
 }
 
-kxtj3_status_t KXTJ3::intDisableAxis(uint8_t first, uint8_t second)
+kxtj3_status_t KXTJ3::intDisableAxis(wu_axis_t first, wu_axis_t second)
 {
   return intDisableAxis(first, second, BLANK, BLANK, BLANK);
 }
 
-kxtj3_status_t KXTJ3::intDisableAxis(uint8_t first, uint8_t second,
-                                     uint8_t third)
+kxtj3_status_t KXTJ3::intDisableAxis(wu_axis_t first, wu_axis_t second,
+                                     wu_axis_t third)
 {
   return intDisableAxis(first, second, third, BLANK, BLANK);
 }
 
-kxtj3_status_t KXTJ3::intDisableAxis(uint8_t first, uint8_t second,
-                                     uint8_t third, uint8_t fourth)
+kxtj3_status_t KXTJ3::intDisableAxis(wu_axis_t first, wu_axis_t second,
+                                     wu_axis_t third, wu_axis_t fourth)
 {
   return intDisableAxis(first, second, third, fourth, BLANK);
 }
