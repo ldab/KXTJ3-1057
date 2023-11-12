@@ -42,13 +42,14 @@ typedef enum {
 } axis_t;
 
 typedef enum {
-  NONE = 0,
-  ZPOS = 1,
-  ZNEG = 2,
-  YPOS = 4,
-  YNEG = 8,
-  XPOS = 16,
-  XNEG = 32,
+  BLANK = 0,
+  ZPOS  = 1,
+  ZNEG  = 2,
+  YPOS  = 4,
+  YNEG  = 8,
+  XPOS  = 16,
+  XNEG  = 32,
+  NONE  = 64,
 } wu_axis_t;
 
 class KXTJ3
@@ -97,13 +98,15 @@ class KXTJ3
                          bool motion = true, bool dataReady = false,
                          bool intPin = true);
 
-  kxtj3_status_t intDisableAxis(uint8_t first);
-  kxtj3_status_t intDisableAxis(uint8_t first, uint8_t second);
-  kxtj3_status_t intDisableAxis(uint8_t first, uint8_t second, uint8_t third);
-  kxtj3_status_t intDisableAxis(uint8_t first, uint8_t second, uint8_t third,
-                                uint8_t fourth);
-  kxtj3_status_t intDisableAxis(uint8_t first, uint8_t second, uint8_t third,
-                                uint8_t fourth, uint8_t fifth);
+  kxtj3_status_t intDisableAxis(wu_axis_t first);
+  kxtj3_status_t intDisableAxis(wu_axis_t first, wu_axis_t second);
+  kxtj3_status_t intDisableAxis(wu_axis_t first, wu_axis_t second,
+                                wu_axis_t third);
+  kxtj3_status_t intDisableAxis(wu_axis_t first, wu_axis_t second,
+                                wu_axis_t third, wu_axis_t fourth);
+  kxtj3_status_t intDisableAxis(wu_axis_t first, wu_axis_t second,
+                                wu_axis_t third, wu_axis_t fourth,
+                                wu_axis_t fifth);
 
   // Checks to see if new data is ready (only works if DRDY interrupt enabled)
   bool dataReady(void);

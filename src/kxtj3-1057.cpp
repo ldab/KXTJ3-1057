@@ -570,10 +570,10 @@ kxtj3_status_t KXTJ3::enable14Bit(uint8_t accRange)
 //  Configure interrupt, stop or move, threshold and duration
 //	Duration, steps and maximum values depend on the ODR chosen.
 //****************************************************************************//
-kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur,
-                              uint8_t naDur, bool polarity, float wuRate,
-                              bool latched, bool pulsed, bool motion,
-                              bool dataReady, bool intPin)
+kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur, uint8_t naDur,
+                              bool polarity, float wuRate, bool latched,
+                              bool pulsed, bool motion, bool dataReady,
+                              bool intPin)
 {
   kxtj3_status_t returnError = IMU_SUCCESS;
 
@@ -796,20 +796,38 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur,
   return returnError;
 }
 
-kxtj3_status_t KXTJ3::intDisableAxis(uint8_t first)
+kxtj3_status_t KXTJ3::intDisableAxis(wu_axis_t first, wu_axis_t second,
+                                     wu_axis_t third, wu_axis_t fourth,
+                                     wu_axis_t fifth)
 {
   // Create temporary variables
   kxtj3_status_t returnError = IMU_SUCCESS;
+  uint8_t temp               = 0x00;
   uint8_t dataToWrite        = 0b00111111;
   uint8_t bitCheck;
 
   // Check to see if ULMODE bit is set and set if so
   returnError = readRegister(&bitCheck, KXTJ3_INT_CTRL_REG2);
+  if (returnError != IMU_SUCCESS)
+    return returnError;
   if (bitCheck & (0x01 << 7))
     dataToWrite |= (0x01 << 7);
 
-  // Rebuild INT_CTRL_REG2 with new axis data using XOR
-  dataToWrite ^= first;
+  if (first & NONE || second & NONE || third & NONE || fourth & NONE ||
+      fifth & NONE) {
+    // Rebuild INT_CTRL_REG2 with 0x00 using XOR to enable all axes
+    dataToWrite ^= temp;
+  } else {
+    // combine the requested axes
+    temp |= first;
+    temp |= second;
+    temp |= third;
+    temp |= fourth;
+    temp |= fifth;
+
+    // Rebuild INT_CTRL_REG2 with new axis data using XOR
+    dataToWrite ^= temp;
+  }
 
   // Write the new values to INT_CTRL_REG2
   if (debugMode) {
@@ -822,83 +840,26 @@ kxtj3_status_t KXTJ3::intDisableAxis(uint8_t first)
   return returnError;
 }
 
-kxtj3_status_t KXTJ3::intDisableAxis(uint8_t first, uint8_t second)
+kxtj3_status_t KXTJ3::intDisableAxis(wu_axis_t first)
 {
-  // Create temporary variables
-  kxtj3_status_t returnError = IMU_SUCCESS;
-  uint8_t temp               = 0x00;
-  if (first == NONE || second == NONE) {
-    returnError = intDisableAxis(temp); // send 0x00 to enable all axes
-  } else {
-    // combine the requested axes and submit to base function
-    temp |= first;
-    temp |= second;
-    returnError = intDisableAxis(temp);
-  }
-
-  return returnError;
+  return intDisableAxis(first, BLANK, BLANK, BLANK, BLANK);
 }
 
-kxtj3_status_t KXTJ3::intDisableAxis(uint8_t first, uint8_t second,
-                                     uint8_t third)
+kxtj3_status_t KXTJ3::intDisableAxis(wu_axis_t first, wu_axis_t second)
 {
-  // Create temporary variables
-  kxtj3_status_t returnError = IMU_SUCCESS;
-  uint8_t temp               = 0x00;
-  if (first == NONE || second == NONE || third == NONE) {
-    returnError = intDisableAxis(temp); // send 0x00 to enable all axes
-  } else {
-    // combine the requested axes and submit to base function
-    temp |= first;
-    temp |= second;
-    temp |= third;
-    returnError = intDisableAxis(temp);
-  }
-
-  return returnError;
+  return intDisableAxis(first, second, BLANK, BLANK, BLANK);
 }
 
-kxtj3_status_t KXTJ3::intDisableAxis(uint8_t first, uint8_t second,
-                                     uint8_t third, uint8_t fourth)
+kxtj3_status_t KXTJ3::intDisableAxis(wu_axis_t first, wu_axis_t second,
+                                     wu_axis_t third)
 {
-  // Create temporary variables
-  kxtj3_status_t returnError = IMU_SUCCESS;
-  uint8_t temp               = 0x00;
-  if (first == NONE || second == NONE || third == NONE || fourth == NONE) {
-    returnError = intDisableAxis(temp); // send 0x00 to enable all axes
-  } else {
-    // combine the requested axes and submit to base function
-    temp |= first;
-    temp |= second;
-    temp |= third;
-    temp |= fourth;
-    returnError = intDisableAxis(temp);
-  }
-
-  return returnError;
+  return intDisableAxis(first, second, third, BLANK, BLANK);
 }
 
-kxtj3_status_t KXTJ3::intDisableAxis(uint8_t first, uint8_t second,
-                                     uint8_t third, uint8_t fourth,
-                                     uint8_t fifth)
+kxtj3_status_t KXTJ3::intDisableAxis(wu_axis_t first, wu_axis_t second,
+                                     wu_axis_t third, wu_axis_t fourth)
 {
-  // Create temporary variables
-  kxtj3_status_t returnError = IMU_SUCCESS;
-  uint8_t temp               = 0x00;
-  if (first == NONE || second == NONE || third == NONE || fourth == NONE ||
-      fifth == NONE) {
-    returnError = intDisableAxis(temp); // send 0x00 to enable all axes
-  } else {
-    // combine the requested axes and submit to base function
-    temp |= first;
-    temp |= second;
-    temp |= third;
-    temp |= fourth;
-    temp |= fifth;
-    returnError = intDisableAxis(temp);
-  }
-
-  return returnError;
+  return intDisableAxis(first, second, third, fourth, BLANK);
 }
 
 bool KXTJ3::dataReady(void)
