@@ -36,7 +36,7 @@ kxtj3_status_t KXTJ3::begin(float sampleRate, uint8_t accRange, bool highResSet,
   debugMode                  = debugSet;
 
   if (debugMode) {
-    KXTJ3_DEBUG.println("Configuring IMU");
+    KXTJ3_DEBUG.println(F("Configuring IMU"));
   }
 
   // Sample rates ≥ 400Hz force High Resolution mode on
@@ -77,8 +77,9 @@ kxtj3_status_t KXTJ3::begin(float sampleRate, uint8_t accRange, bool highResSet,
   }
 
   if (debugMode) {
-    KXTJ3_DEBUG.println("Apply settings");
+    KXTJ3_DEBUG.println(F("Apply settings"));
   }
+
   returnError = applySettings();
 
   return returnError;
@@ -152,9 +153,9 @@ kxtj3_status_t KXTJ3::readRegister(uint8_t *outputPointer, uint8_t offset)
   }
 
   if (debugMode) {
-    KXTJ3_DEBUG.print("Read register 0x");
+    KXTJ3_DEBUG.print(F("Read register 0x"));
     KXTJ3_DEBUG.print(offset, HEX);
-    KXTJ3_DEBUG.print(" = 0x");
+    KXTJ3_DEBUG.print(F(" = 0x"));
     KXTJ3_DEBUG.println(result, HEX);
   }
 
@@ -178,9 +179,9 @@ kxtj3_status_t KXTJ3::readRegisterInt16(int16_t *outputPointer, uint8_t offset)
   int16_t output = (int16_t)myBuffer[0] | int16_t(myBuffer[1] << 8);
 
   if (debugMode && returnError == IMU_SUCCESS) {
-    KXTJ3_DEBUG.print("16 bits from 0x");
+    KXTJ3_DEBUG.print(F("16 bits from 0x"));
     KXTJ3_DEBUG.print(offset, HEX);
-    KXTJ3_DEBUG.print(" = ");
+    KXTJ3_DEBUG.print(F(" = "));
     KXTJ3_DEBUG.println(output);
   } else if (returnError != IMU_SUCCESS) {
     return returnError;
@@ -441,7 +442,13 @@ kxtj3_status_t KXTJ3::applySettings(void)
   kxtj3_status_t returnError = IMU_SUCCESS;
   uint8_t dataToWrite        = 0; // Temporary variable
 
-  standby(true);
+  // Note that to properly change the value of this register, the PC1 bit in
+  // CTRL_REG1 must first be set to “0”.
+  returnError = standby(true);
+
+  if (returnError != IMU_SUCCESS) {
+    return returnError;
+  }
 
   // Build DATA_CTRL_REG
 
@@ -473,7 +480,7 @@ kxtj3_status_t KXTJ3::applySettings(void)
 
   // Now, write the patched together data
   if (debugMode) {
-    KXTJ3_DEBUG.print("KXTJ3_DATA_CTRL_REG: 0x");
+    KXTJ3_DEBUG.print(F("KXTJ3_DATA_CTRL_REG: 0x"));
     KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
   returnError = writeRegister(KXTJ3_DATA_CTRL_REG, dataToWrite);
@@ -489,7 +496,7 @@ kxtj3_status_t KXTJ3::applySettings(void)
 
   if (highRes) {
     if (debugMode) {
-      KXTJ3_DEBUG.println("High Resolution set");
+      KXTJ3_DEBUG.println(F("High Resolution set"));
     }
     dataToWrite = 0xC0;
   }
@@ -513,7 +520,7 @@ kxtj3_status_t KXTJ3::applySettings(void)
 
   // Now, write the patched together data
   if (debugMode) {
-    KXTJ3_DEBUG.print("KXTJ3_CTRL_REG1: 0x");
+    KXTJ3_DEBUG.print(F("KXTJ3_CTRL_REG1: 0x"));
     KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
   returnError = writeRegister(KXTJ3_CTRL_REG1, dataToWrite);
@@ -534,10 +541,16 @@ kxtj3_status_t KXTJ3::enable14Bit(uint8_t accRange)
   highRes                    = true;     // Make sure highRes is set to true
   en14Bit                    = true;     // Set 14-bit check to true as well
 
-  standby(true);
+  // Note that to properly change the value of this register, the PC1 bit in
+  // CTRL_REG1 must first be set to “0”.
+  returnError = standby(true);
+
+  if (returnError != IMU_SUCCESS) {
+    return returnError;
+  }
 
   if (debugMode) {
-    KXTJ3_DEBUG.println("Switching to 14-bit mode");
+    KXTJ3_DEBUG.println(F("Switching to 14-bit mode"));
   }
 
   // Build CTRL_REG1
@@ -554,7 +567,7 @@ kxtj3_status_t KXTJ3::enable14Bit(uint8_t accRange)
 
   // Write the new data to CTRL_REG1
   if (debugMode) {
-    KXTJ3_DEBUG.print("KXTJ3_CTRL_REG1: 0x");
+    KXTJ3_DEBUG.print(F("KXTJ3_CTRL_REG1: 0x"));
     KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
   returnError = writeRegister(KXTJ3_CTRL_REG1, dataToWrite);
@@ -579,7 +592,7 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur, uint8_t naDur,
 
   // Note that to properly change the value of this register, the PC1 bit in
   // CTRL_REG1 must first be set to “0”.
-  returnError                = standby(true);
+  returnError = standby(true);
 
   if (returnError != IMU_SUCCESS) {
     return returnError;
@@ -601,7 +614,7 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur, uint8_t naDur,
     dataToWrite |= (0x01 << 5); // Interrupt pin enabled
 
   if (debugMode) {
-    KXTJ3_DEBUG.print("KXTJ3_INT_CTRL_REG1: 0x");
+    KXTJ3_DEBUG.print(F("KXTJ3_INT_CTRL_REG1: 0x"));
     KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
@@ -627,7 +640,7 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur, uint8_t naDur,
     _reg1 |= (0x01 << 5); // Sets DRDY to enabled
 
   if (debugMode) {
-    KXTJ3_DEBUG.print("KXTJ3_CTRL_REG1: 0x");
+    KXTJ3_DEBUG.print(F("KXTJ3_CTRL_REG1: 0x"));
     KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
@@ -700,7 +713,7 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur, uint8_t naDur,
     dataToWrite = 0x07; // 100 Hz
 
   if (debugMode) {
-    KXTJ3_DEBUG.print("KXTJ3_CTRL_REG2: 0x");
+    KXTJ3_DEBUG.print(F("KXTJ3_CTRL_REG2: 0x"));
     KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
@@ -718,7 +731,7 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur, uint8_t naDur,
     dataToWrite |= (0x01 << 7); // enable unlatched mode
 
   if (debugMode) {
-    KXTJ3_DEBUG.print("KXTJ3_INT_CTRL_REG2: 0x");
+    KXTJ3_DEBUG.print(F("KXTJ3_INT_CTRL_REG2: 0x"));
     KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
@@ -733,7 +746,7 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur, uint8_t naDur,
   dataToWrite = (uint8_t)(threshold >> 4);
 
   if (debugMode) {
-    KXTJ3_DEBUG.print("KXTJ3_WAKEUP_THRESHOLD_H: 0x");
+    KXTJ3_DEBUG.print(F("KXTJ3_WAKEUP_THRESHOLD_H: 0x"));
     KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
@@ -746,7 +759,7 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur, uint8_t naDur,
   dataToWrite = (uint8_t)(threshold << 4);
 
   if (debugMode) {
-    KXTJ3_DEBUG.print("KXTJ3_WAKEUP_THRESHOLD_L: 0x");
+    KXTJ3_DEBUG.print(F("KXTJ3_WAKEUP_THRESHOLD_L: 0x"));
     KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
@@ -763,7 +776,7 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur, uint8_t naDur,
   dataToWrite = moveDur;
 
   if (debugMode) {
-    KXTJ3_DEBUG.print("KXTJ3_WAKEUP_COUNTER: 0x");
+    KXTJ3_DEBUG.print(F("KXTJ3_WAKEUP_COUNTER: 0x"));
     KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
@@ -780,7 +793,7 @@ kxtj3_status_t KXTJ3::intConf(int16_t threshold, uint8_t moveDur, uint8_t naDur,
   dataToWrite = naDur;
 
   if (debugMode) {
-    KXTJ3_DEBUG.print("KXTJ3_NA_COUNTER: 0x");
+    KXTJ3_DEBUG.print(F("KXTJ3_NA_COUNTER: 0x"));
     KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
@@ -805,6 +818,14 @@ kxtj3_status_t KXTJ3::intDisableAxis(wu_axis_t first, wu_axis_t second,
   uint8_t temp               = 0x00;
   uint8_t dataToWrite        = 0b00111111;
   uint8_t bitCheck;
+
+  // Note that to properly change the value of this register, the PC1 bit in
+  // CTRL_REG1 must first be set to “0”.
+  returnError = standby(true);
+
+  if (returnError != IMU_SUCCESS) {
+    return returnError;
+  }
 
   // Check to see if ULMODE bit is set and set if so
   returnError = readRegister(&bitCheck, KXTJ3_INT_CTRL_REG2);
@@ -831,11 +852,14 @@ kxtj3_status_t KXTJ3::intDisableAxis(wu_axis_t first, wu_axis_t second,
 
   // Write the new values to INT_CTRL_REG2
   if (debugMode) {
-    KXTJ3_DEBUG.print("KXTJ3_INT_CTRL_REG2: 0x");
+    KXTJ3_DEBUG.print(F("KXTJ3_INT_CTRL_REG2: 0x"));
     KXTJ3_DEBUG.println(dataToWrite, HEX);
   }
 
   returnError = writeRegister(KXTJ3_INT_CTRL_REG2, dataToWrite);
+
+  // Set IMU to Operational mode
+  returnError = standby(false);
 
   return returnError;
 }
