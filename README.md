@@ -94,7 +94,7 @@ This function initializes the IMU's Interrupt Engine. An overview of the system 
 
 ### intDisableAxis(interruptDirection)
 
-Allows you to selectively disable individual directions from triggering the Motion Detection interrupt, or reenable all directions. Valid values are `XNEG`, `XPOS`, `YNEG`, `YPOS`, `ZNEG`, `ZPOS`, and `NONE`. Accepts up to five comma-separated values. Including `NONE` at any point will enable all directions regardless of other parameters. To disable all directions, please set the `motion` parameter in `intConf` to `false` instead.
+Allows you to selectively disable individual directions from triggering the Motion Detection interrupt, or reenable all directions. This function must be called **after** `intConf` to have any effect. Valid values are `XNEG`, `XPOS`, `YNEG`, `YPOS`, `ZNEG`, `ZPOS`, and `NONE`. Accepts up to five comma-separated values. Including `NONE` at any point will enable all directions regardless of other parameters. To disable all directions, please set the `motion` parameter in `intConf` to `false` instead.
 
 ### motionDetected()
 
